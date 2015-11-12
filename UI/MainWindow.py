@@ -8,8 +8,15 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import datetime
+import serial
+import serial.tools.list_ports
+import Functions.SerialFunctions
+from serial.serialutil import SerialException
 
 class Ui_MainWindow(object):
+
+    ser = serial.Serial
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 800)
@@ -246,6 +253,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuPomoc.menuAction())
 
         self.saveToFile.stateChanged.connect(self.saveToFileStateChanged)
+        self.pushButton.clicked.connect(self.connectButton)
+        self.stopButton.clicked.connect(self.stopButtonAction)
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
@@ -292,11 +301,30 @@ class Ui_MainWindow(object):
     def saveToFileStateChanged(self, state):
         if state == 0:
             self.groupBox.setEnabled(False)
-
             self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': Zapisywanie plikow wylaczone')
-
         else:
             self.groupBox.setEnabled(True)
             self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': Zapisywanie plikow wlaczone')
 
+    def connectButton(self):
+        cur_item = self.uartPortList.currentText()
+        if self.pushButton.text() == u"Połącz":
+            self.pushButton.setText(u"Rozłącz")
+            if cur_item is not None:
+                fullname = Functions.SerialFunctions.fullPortName(cur_item)
+                try:
+                    self.ser = serial.Serial(fullname, 9600)
+                    self.terminal.appendPlainText('Opened %s successfully' % cur_item)
+                    self.ser.write("hello\n".encode())
+                except SerialException as e:
+                    self.terminal.appendPlainText('Failed to open %s:\n %s' % (cur_item, e))
+        else:
+            self.pushButton.setText(u"Połącz")
+            if self.ser.isOpen():
+                self.ser.close()
+                self.terminal.appendPlainText('Closed %s successfully' % cur_item)
 
+
+
+    def stopButtonAction(self):
+        self.terminal.appendPlainText("stop")
