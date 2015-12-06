@@ -12,10 +12,14 @@ import serial
 import serial.tools.list_ports
 import Functions.SerialFunctions
 from serial.serialutil import SerialException
+import threading
 
 class Ui_MainWindow(object):
 
     ser = serial.Serial
+    logSomething = lambda self,str: self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + str)
+    thread = None
+    alive = threading.Event()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -90,25 +94,128 @@ class Ui_MainWindow(object):
         self.label_5 = QtWidgets.QLabel(self.usb_hid)
         self.label_5.setGeometry(QtCore.QRect(10, 90, 71, 16))
         self.label_5.setObjectName("label_5")
-        self.ProductID = QtWidgets.QLineEdit(self.usb_hid)
-        self.ProductID.setGeometry(QtCore.QRect(10, 110, 113, 22))
-        self.ProductID.setObjectName("ProductID")
+        self.productID = QtWidgets.QLineEdit(self.usb_hid)
+        self.productID.setGeometry(QtCore.QRect(10, 110, 113, 22))
+        self.productID.setObjectName("productID")
         self.tabWidget.addTab(self.usb_hid, "")
         self.verticalLayout_3.addWidget(self.tabWidget)
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.connectButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
-        self.pushButton.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout_3.addWidget(self.pushButton)
+        sizePolicy.setHeightForWidth(self.connectButton.sizePolicy().hasHeightForWidth())
+        self.connectButton.setSizePolicy(sizePolicy)
+        self.connectButton.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.connectButton.setObjectName("connectButton")
+        self.verticalLayout_3.addWidget(self.connectButton)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_3.addItem(spacerItem)
         self.horizontalLayout.addLayout(self.verticalLayout_3)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.groupBox_4 = QtWidgets.QGroupBox(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
+        self.groupBox_4.setSizePolicy(sizePolicy)
+        self.groupBox_4.setMinimumSize(QtCore.QSize(0, 60))
+        self.groupBox_4.setObjectName("groupBox_4")
+        self.label_14 = QtWidgets.QLabel(self.groupBox_4)
+        self.label_14.setGeometry(QtCore.QRect(10, 20, 171, 16))
+        self.label_14.setObjectName("label_14")
+        self.speedMeter = QtWidgets.QLabel(self.groupBox_4)
+        self.speedMeter.setGeometry(QtCore.QRect(10, 40, 55, 16))
+        self.speedMeter.setObjectName("speedMeter")
+        self.label_15 = QtWidgets.QLabel(self.groupBox_4)
+        self.label_15.setGeometry(QtCore.QRect(200, 20, 81, 16))
+        self.label_15.setObjectName("label_15")
+        self.voltageMeter = QtWidgets.QLabel(self.groupBox_4)
+        self.voltageMeter.setGeometry(QtCore.QRect(200, 40, 55, 16))
+        self.voltageMeter.setObjectName("voltageMeter")
+        self.label_16 = QtWidgets.QLabel(self.groupBox_4)
+        self.label_16.setGeometry(QtCore.QRect(310, 20, 55, 16))
+        self.label_16.setObjectName("label_16")
+        self.currentMeter = QtWidgets.QLabel(self.groupBox_4)
+        self.currentMeter.setGeometry(QtCore.QRect(310, 40, 55, 16))
+        self.currentMeter.setObjectName("currentMeter")
+        self.label_17 = QtWidgets.QLabel(self.groupBox_4)
+        self.label_17.setGeometry(QtCore.QRect(400, 20, 71, 16))
+        self.label_17.setObjectName("label_17")
+        self.pressureMeter = QtWidgets.QLabel(self.groupBox_4)
+        self.pressureMeter.setGeometry(QtCore.QRect(400, 40, 55, 16))
+        self.pressureMeter.setObjectName("pressureMeter")
+        self.verticalLayout_2.addWidget(self.groupBox_4)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
+        self.groupBox_2.setSizePolicy(sizePolicy)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.poleNumber = QtWidgets.QLineEdit(self.groupBox_2)
+        self.poleNumber.setGeometry(QtCore.QRect(10, 50, 113, 22))
+        self.poleNumber.setObjectName("poleNumber")
+        self.label_6 = QtWidgets.QLabel(self.groupBox_2)
+        self.label_6.setGeometry(QtCore.QRect(10, 30, 141, 16))
+        self.label_6.setObjectName("label_6")
+        self.label_8 = QtWidgets.QLabel(self.groupBox_2)
+        self.label_8.setGeometry(QtCore.QRect(10, 90, 111, 16))
+        self.label_8.setObjectName("label_8")
+        self.supplyVoltage = QtWidgets.QLineEdit(self.groupBox_2)
+        self.supplyVoltage.setGeometry(QtCore.QRect(10, 110, 113, 22))
+        self.supplyVoltage.setObjectName("supplyVoltage")
+        self.calibrateTens = QtWidgets.QPushButton(self.groupBox_2)
+        self.calibrateTens.setGeometry(QtCore.QRect(10, 170, 93, 28))
+        self.calibrateTens.setObjectName("calibrateTens")
+        self.label_13 = QtWidgets.QLabel(self.groupBox_2)
+        self.label_13.setGeometry(QtCore.QRect(10, 150, 81, 16))
+        self.label_13.setObjectName("label_13")
+        self.horizontalLayout_2.addWidget(self.groupBox_2)
+        self.groupBox_3 = QtWidgets.QGroupBox(self.centralwidget)
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.label_7 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_7.setGeometry(QtCore.QRect(10, 30, 181, 16))
+        self.label_7.setObjectName("label_7")
+        self.minPWM = QtWidgets.QLineEdit(self.groupBox_3)
+        self.minPWM.setGeometry(QtCore.QRect(40, 50, 41, 22))
+        self.minPWM.setObjectName("minPWM")
+        self.label_9 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_9.setGeometry(QtCore.QRect(10, 50, 21, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_9.setFont(font)
+        self.label_9.setObjectName("label_9")
+        self.label_10 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_10.setGeometry(QtCore.QRect(90, 50, 21, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_10.setFont(font)
+        self.label_10.setObjectName("label_10")
+        self.maxPWM = QtWidgets.QLineEdit(self.groupBox_3)
+        self.maxPWM.setGeometry(QtCore.QRect(120, 50, 41, 22))
+        self.maxPWM.setObjectName("maxPWM")
+        self.label_11 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_11.setGeometry(QtCore.QRect(10, 90, 131, 16))
+        self.label_11.setObjectName("label_11")
+        self.jumpPWM = QtWidgets.QLineEdit(self.groupBox_3)
+        self.jumpPWM.setGeometry(QtCore.QRect(10, 110, 41, 22))
+        self.jumpPWM.setObjectName("jumpPWM")
+        self.label_12 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_12.setGeometry(QtCore.QRect(10, 140, 261, 16))
+        self.label_12.setObjectName("label_12")
+        self.timePWM = QtWidgets.QLineEdit(self.groupBox_3)
+        self.timePWM.setGeometry(QtCore.QRect(10, 160, 41, 22))
+        self.timePWM.setObjectName("timePWM")
+        self.horizontalLayout_2.addWidget(self.groupBox_3)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem1)
+        self.verticalLayout_2.addItem(spacerItem1)
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.saveToFile = QtWidgets.QCheckBox(self.centralwidget)
@@ -140,11 +247,6 @@ class Ui_MainWindow(object):
         self.savePressure.setGeometry(QtCore.QRect(10, 120, 81, 20))
         self.savePressure.setChecked(True)
         self.savePressure.setObjectName("savePressure")
-        self.saveSpeed.raise_()
-        self.saveVoltage.raise_()
-        self.saveCurrent.raise_()
-        self.savePressure.raise_()
-        self.saveToFile.raise_()
         self.verticalLayout_4.addWidget(self.groupBox)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_4.addItem(spacerItem2)
@@ -168,7 +270,6 @@ class Ui_MainWindow(object):
         self.stopButton.setFont(font)
         self.stopButton.setObjectName("stopButton")
         self.verticalLayout_6.addWidget(self.stopButton)
-        self.groupBox.raise_()
         self.stopButton.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -253,12 +354,13 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuPomoc.menuAction())
 
         self.saveToFile.stateChanged.connect(self.saveToFileStateChanged)
-        self.pushButton.clicked.connect(self.connectButton)
+        self.connectButton.clicked.connect(self.connectButtonPushed)
         self.stopButton.clicked.connect(self.stopButtonAction)
+        self.calibrateTens.clicked.connect(self.calibrate)
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
-        self.uartBaudRateList.setCurrentIndex(4)
+        self.uartBaudRateList.setCurrentIndex(11)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -267,6 +369,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Wybrany sposób komunikacji:"))
         self.label_2.setText(_translate("MainWindow", "Port:"))
         self.label_3.setText(_translate("MainWindow", "BaudRate:"))
+        self.uartBaudRateList.setCurrentText(_translate("MainWindow", "115200"))
         self.uartBaudRateList.setItemText(0, _translate("MainWindow", "600"))
         self.uartBaudRateList.setItemText(1, _translate("MainWindow", "1200"))
         self.uartBaudRateList.setItemText(2, _translate("MainWindow", "2400"))
@@ -285,7 +388,27 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "VendroID:"))
         self.label_5.setText(_translate("MainWindow", "ProductID:"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.usb_hid), _translate("MainWindow", "USB HID"))
-        self.pushButton.setText(_translate("MainWindow", "Połącz"))
+        self.connectButton.setText(_translate("MainWindow", "Połącz"))
+        self.groupBox_4.setTitle(_translate("MainWindow", "Wskazania:"))
+        self.label_14.setText(_translate("MainWindow", "Prędkość obrotowa[obr/min]:"))
+        self.speedMeter.setText(_translate("MainWindow", "0"))
+        self.label_15.setText(_translate("MainWindow", "Napięcie [V]:"))
+        self.voltageMeter.setText(_translate("MainWindow", "0"))
+        self.label_16.setText(_translate("MainWindow", "Prąd [A]:"))
+        self.currentMeter.setText(_translate("MainWindow", "0"))
+        self.label_17.setText(_translate("MainWindow", "Nacisk [N]:"))
+        self.pressureMeter.setText(_translate("MainWindow", "0"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "Parametry hamowni:"))
+        self.label_6.setText(_translate("MainWindow", "Liczba par biegunów:"))
+        self.label_8.setText(_translate("MainWindow", "Napięcie zasilania:"))
+        self.calibrateTens.setText(_translate("MainWindow", "Kalibracja"))
+        self.label_13.setText(_translate("MainWindow", "Tensometr:"))
+        self.groupBox_3.setTitle(_translate("MainWindow", "Ustawienia testów:"))
+        self.label_7.setText(_translate("MainWindow", "Zakres wypełnienia [%]:"))
+        self.label_9.setText(_translate("MainWindow", "Od"))
+        self.label_10.setText(_translate("MainWindow", "do"))
+        self.label_11.setText(_translate("MainWindow", "Skok wypełnienia[%]:"))
+        self.label_12.setText(_translate("MainWindow", "Czas pomiaru pojedynczego wypełnienia[s]:"))
         self.saveToFile.setText(_translate("MainWindow", "Zapisuj do pliku"))
         self.groupBox.setTitle(_translate("MainWindow", "Opcje zapisu"))
         self.saveSpeed.setText(_translate("MainWindow", "Prędkość obrotowa"))
@@ -301,30 +424,63 @@ class Ui_MainWindow(object):
     def saveToFileStateChanged(self, state):
         if state == 0:
             self.groupBox.setEnabled(False)
-            self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': Zapisywanie plikow wylaczone')
+            self.logSomething(': Zapisywanie plikow wylaczone')
         else:
             self.groupBox.setEnabled(True)
-            self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': Zapisywanie plikow wlaczone')
+            self.logSomething(': Zapisywanie plikow wlaczone')
 
-    def connectButton(self):
-        cur_item = self.uartPortList.currentText()
-        if self.pushButton.text() == u"Połącz":
-            self.pushButton.setText(u"Rozłącz")
-            if cur_item is not None:
-                fullname = Functions.SerialFunctions.fullPortName(cur_item)
-                try:
-                    self.ser = serial.Serial(fullname, 9600)
-                    self.terminal.appendPlainText('Opened %s successfully' % cur_item)
-                    self.ser.write("hello\n".encode())
-                except SerialException as e:
-                    self.terminal.appendPlainText('Failed to open %s:\n %s' % (cur_item, e))
-        else:
-            self.pushButton.setText(u"Połącz")
-            if self.ser.isOpen():
-                self.ser.close()
-                self.terminal.appendPlainText('Closed %s successfully' % cur_item)
+    def connectButtonPushed(self):
+        if self.usb_hid.isHidden():
+            cur_item = self.uartPortList.currentText()
+            if self.connectButton.text() == u"Połącz":
+                self.connectButton.setText(u"Rozłącz")
+                if cur_item is not None:
+                    fullname = Functions.SerialFunctions.fullPortName(cur_item)
+                    try:
+                        self.tabWidget.setEnabled(False)
+                        self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=0, writeTimeout=3)
+                        self.logSomething('Opened %s successfully' % cur_item)
+                        self.ser.write("hello\n".encode())
+                        self.StartThread()
+                    except SerialException as e:
+                        self.logSomething('%s error:\n %s' % (cur_item, e))
+            else:
+                self.connectButton.setText(u"Połącz")
+                if self.ser.isOpen():
+                    self.StopThread()
+                    self.tabWidget.setEnabled(True)
+                    self.ser.close()
+                    self.logSomething('Closed %s successfully' % cur_item)
 
-
+    def calibrate(self):
+        #TODO Open dialog with calirate options
+        self.logSomething('Skalibrowano tensometr!')
 
     def stopButtonAction(self):
-        self.terminal.appendPlainText("stop")
+        #TODO stop action - if com or usb opened send stop frame
+        self.logSomething("stop")
+
+    def StartThread(self):
+        """Start the receiver thread"""
+        self.thread = threading.Thread(target=self.ComPortThread)
+        self.thread.setDaemon(1)
+        self.alive.set()
+        self.thread.start()
+        self.ser.rts = True
+        self.ser.dtr = True
+
+    def StopThread(self):
+        """Stop the receiver thread, wait until it's finished."""
+        if self.thread is not None:
+            self.alive.clear()          # clear alive event for thread
+            self.thread.join()          # wait until thread has finished
+            self.thread = None
+
+    def ComPortThread(self):
+        """\
+        Thread that handles the incoming traffic.
+        """
+        while self.alive.isSet():
+            b = self.ser.readline().decode()
+            if b:
+                self.logSomething(b)

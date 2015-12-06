@@ -18,8 +18,6 @@ ui = UI.MainWindow.Ui_MainWindow()
 ui.setupUi(mainWindow)
 mainWindow.show()
 fill_ports_list()
-
-
 sys.exit(app.exec_())
 
 

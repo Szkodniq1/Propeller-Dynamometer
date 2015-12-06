@@ -120,8 +120,11 @@
               <height>22</height>
              </rect>
             </property>
+            <property name="currentText">
+             <string>115200</string>
+            </property>
             <property name="currentIndex">
-             <number>4</number>
+             <number>11</number>
             </property>
             <item>
              <property name="text">
@@ -235,7 +238,7 @@
              <string>ProductID:</string>
             </property>
            </widget>
-           <widget class="QLineEdit" name="ProductID">
+           <widget class="QLineEdit" name="productID">
             <property name="geometry">
              <rect>
               <x>10</x>
@@ -249,7 +252,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="connectButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -280,17 +283,361 @@
        </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>0</number>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
         </property>
-       </spacer>
+        <item>
+         <widget class="QGroupBox" name="groupBox_4">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>60</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Wskazania:</string>
+          </property>
+          <widget class="QLabel" name="label_14">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>171</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Prędkość obrotowa[obr/min]:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="speedMeter">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>40</y>
+             <width>55</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_15">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>20</y>
+             <width>81</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Napięcie [V]:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="voltageMeter">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>40</y>
+             <width>55</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_16">
+           <property name="geometry">
+            <rect>
+             <x>310</x>
+             <y>20</y>
+             <width>55</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Prąd [A]:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="currentMeter">
+           <property name="geometry">
+            <rect>
+             <x>310</x>
+             <y>40</y>
+             <width>55</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_17">
+           <property name="geometry">
+            <rect>
+             <x>400</x>
+             <y>20</y>
+             <width>71</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Nacisk [N]:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="pressureMeter">
+           <property name="geometry">
+            <rect>
+             <x>400</x>
+             <y>40</y>
+             <width>55</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Parametry hamowni:</string>
+            </property>
+            <widget class="QLineEdit" name="poleNumber">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>50</y>
+               <width>113</width>
+               <height>22</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_6">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>141</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Liczba par biegunów:</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_8">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>90</y>
+               <width>111</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Napięcie zasilania:</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="supplyVoltage">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>110</y>
+               <width>113</width>
+               <height>22</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="calibrateTens">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>170</y>
+               <width>93</width>
+               <height>28</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Kalibracja</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_13">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>150</y>
+               <width>81</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Tensometr:</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Ustawienia testów:</string>
+            </property>
+            <widget class="QLabel" name="label_7">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>181</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Zakres wypełnienia [%]:</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="minPWM">
+             <property name="geometry">
+              <rect>
+               <x>40</x>
+               <y>50</y>
+               <width>41</width>
+               <height>22</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_9">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>50</y>
+               <width>21</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Od</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_10">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>50</y>
+               <width>21</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>do</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="maxPWM">
+             <property name="geometry">
+              <rect>
+               <x>120</x>
+               <y>50</y>
+               <width>41</width>
+               <height>22</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_11">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>90</y>
+               <width>131</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Skok wypełnienia[%]:</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="jumpPWM">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>110</y>
+               <width>41</width>
+               <height>22</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_12">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>140</y>
+               <width>261</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Czas pomiaru pojedynczego wypełnienia[s]:</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="timePWM">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>160</y>
+               <width>41</width>
+               <height>22</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -391,12 +738,6 @@
             <bool>true</bool>
            </property>
           </widget>
-          <zorder>saveSpeed</zorder>
-          <zorder>saveVoltage</zorder>
-          <zorder>saveCurrent</zorder>
-          <zorder>savePressure</zorder>
-          <zorder>saveToFile</zorder>
-          <zorder>verticalLayoutWidget</zorder>
          </widget>
         </item>
         <item>
@@ -463,8 +804,6 @@
      </widget>
     </item>
    </layout>
-   <zorder>horizontalLayoutWidget</zorder>
-   <zorder>groupBox</zorder>
    <zorder>stopButton</zorder>
    <zorder>verticalSpacer</zorder>
   </widget>
