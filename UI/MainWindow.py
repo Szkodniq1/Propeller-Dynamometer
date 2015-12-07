@@ -13,6 +13,12 @@ import serial.tools.list_ports
 import Functions.SerialFunctions
 from serial.serialutil import SerialException
 import threading
+import usb.core
+import usb.util
+import Functions.Misc
+
+__author__ = 'Piotr Gomola'
+
 
 class Ui_MainWindow(object):
 
@@ -20,6 +26,10 @@ class Ui_MainWindow(object):
     logSomething = lambda self,str: self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + str)
     thread = None
     alive = threading.Event()
+    file = None
+    dev=None
+    epWrite=None
+    epRead=None
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -431,26 +441,71 @@ class Ui_MainWindow(object):
 
     def connectButtonPushed(self):
         if self.usb_hid.isHidden():
-            cur_item = self.uartPortList.currentText()
+            self.uartConnection()
+        else:
+            self.usbHIDConnection()
+
+    def uartConnection(self):
+        cur_item = self.uartPortList.currentText()
+        if self.connectButton.text() == u"Połącz":
+            self.connectButton.setText(u"Rozłącz")
+            if cur_item is not None:
+                fullname = Functions.SerialFunctions.fullPortName(cur_item)
+                try:
+                    self.tabWidget.setEnabled(False)
+                    self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=0, writeTimeout=3)
+                    self.logSomething('Opened %s successfully' % cur_item)
+                    self.ser.write("hello\n".encode())
+                    self.StartThread()
+                    if self.groupBox.isEnabled():
+                        self.file = open("pomiary.txt",'w')
+                        self.writeToFile('Speed','Current','Voltage','Pressure')
+                except SerialException as e:
+                    self.logSomething('%s error:\n %s' % (cur_item, e))
+        else:
+            self.connectButton.setText(u"Połącz")
+            if self.ser.isOpen():
+                self.StopThread()
+                self.tabWidget.setEnabled(True)
+                self.ser.close()
+                self.logSomething('Closed %s successfully' % cur_item)
+                if self.groupBox.isEnabled():
+                        self.file.close()
+
+    def usbHIDConnection(self):
+        if self.vendorID.text()is not "" and self.productID.text()is not "" and len(self.vendorID.text()) is 4 and len(self.productID.text())is 4:
+            vendorId = Functions.Misc.stringToHex( self.vendorID.text())#0x477
+            productId = Functions.Misc.stringToHex( self.productID.text())#0x5620
             if self.connectButton.text() == u"Połącz":
                 self.connectButton.setText(u"Rozłącz")
-                if cur_item is not None:
-                    fullname = Functions.SerialFunctions.fullPortName(cur_item)
-                    try:
-                        self.tabWidget.setEnabled(False)
-                        self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=0, writeTimeout=3)
-                        self.logSomething('Opened %s successfully' % cur_item)
-                        self.ser.write("hello\n".encode())
-                        self.StartThread()
-                    except SerialException as e:
-                        self.logSomething('%s error:\n %s' % (cur_item, e))
+                self.tabWidget.setEnabled(False)
+                self.dev = usb.core.find(idVendor=vendorId, idProduct=productId)
+                if self.dev is None:
+                    raise ValueError('Device not found')
+                # get an endpoint instance
+                cfg = self.dev.get_active_configuration()
+                intf = cfg[(0, 0)]
+                self.epWrite = intf[1]
+                self.epRead = intf[0]
+                assert self.epWrite is not None
+                assert self.epRead is not None
+                self.StartThread()
+                if self.groupBox.isEnabled():
+                        self.file = open("pomiary.txt",'w')
+                        self.writeToFile('Speed','Current','Voltage','Pressure')
             else:
                 self.connectButton.setText(u"Połącz")
-                if self.ser.isOpen():
-                    self.StopThread()
-                    self.tabWidget.setEnabled(True)
-                    self.ser.close()
-                    self.logSomething('Closed %s successfully' % cur_item)
+                self.tabWidget.setEnabled(True)
+                self.dev = None
+                self.epRead = None
+                self.epWrite = None
+                self.StopThread()
+                if self.groupBox.isEnabled():
+                    self.file.close()
+        elif self.vendorID.text()is "" or self.productID.text()is "":
+            self.logSomething('Please, fill all fileds needed to connect via USB HID.')
+        else:
+            self.logSomething('VendorId or ProductId have incorrect structure. It should consist of 4 characters.')
 
     def calibrate(self):
         #TODO Open dialog with calirate options
@@ -462,7 +517,7 @@ class Ui_MainWindow(object):
 
     def StartThread(self):
         """Start the receiver thread"""
-        self.thread = threading.Thread(target=self.ComPortThread)
+        self.thread = threading.Thread(target=self.CommunicationThread)
         self.thread.setDaemon(1)
         self.alive.set()
         self.thread.start()
@@ -476,11 +531,33 @@ class Ui_MainWindow(object):
             self.thread.join()          # wait until thread has finished
             self.thread = None
 
-    def ComPortThread(self):
+    def CommunicationThread(self):
         """\
         Thread that handles the incoming traffic.
         """
         while self.alive.isSet():
-            b = self.ser.readline().decode()
-            if b:
-                self.logSomething(b)
+            if self.usb_hid.isHidden():
+                b = self.ser.readline().decode()
+                if b:
+                    self.logSomething(b)
+            else:
+                try:
+                    data = self.dev.read(self.epRead, 1000)
+                    # print data
+                    sret = ''.join([chr(x) for x in data])
+                    # print sret
+                    self.logSomething(sret)
+                except usb.core.USBError as e:
+                    data = None
+                    if e.args == ('Operation timed out',):
+                        continue
+
+    def writeToFile(self, speed=None, current=None, voltage=None, pressure=None):
+        if self.saveSpeed.isChecked() and speed is not None:
+            self.file.write(speed+';')
+        if self.saveCurrent.isChecked() and current is not None:
+            self.file.write(current+';')
+        if self.saveVoltage.isChecked() and voltage is not None:
+            self.file.write(voltage+';')
+        if self.savePressure.isChecked() and pressure is not None:
+            self.file.write(pressure)
