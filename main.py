@@ -10,6 +10,3 @@ if __name__ == '__main__':
     mainWindow = MainWindowController()
     mainWindow.show()
     sys.exit(app.exec_())
-
-
-

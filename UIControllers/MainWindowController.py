@@ -20,8 +20,8 @@ class FinalMeta(type(QtWidgets.QMainWindow), type(Ui_MainWindow)):
 
 class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=FinalMeta):
 
+
     ser = serial.Serial
-    logSomething = lambda self, str: self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + str)
     thread = None
     alive = threading.Event()
     file = None
@@ -45,6 +45,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.stopButton.clicked.connect(self.stopButtonAction)
         self.calibrateTens.clicked.connect(self.calibrate)
 
+
     def saveToFileStateChanged(self, state):
         if state == 0:
             self.groupBox.setEnabled(False)
@@ -67,15 +68,18 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                 fullname = Functions.SerialFunctions.fullPortName(cur_item)
                 try:
                     self.tabWidget.setEnabled(False)
-                    self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=0, writeTimeout=3)
+                    self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=None, writeTimeout=3)
                     self.logSomething('Opened %s successfully' % cur_item)
-                    self.ser.write("hello\n".encode())
+                    #self.ser.write("hello\n".encode())
                     self.StartThread()
                     if self.groupBox.isEnabled():
                         self.file = open("pomiary.txt", 'w')
                         self.writeToFile('Speed', 'Current', 'Voltage', 'Pressure')
                 except SerialException as e:
                     self.logSomething('%s error:\n %s' % (cur_item, e))
+                    self.tabWidget.setEnabled(True)
+                    self.connectButton.setText(u"Połącz")
+
         else:
             self.connectButton.setText(u"Połącz")
             if self.ser.isOpen():
@@ -125,6 +129,9 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
     def calibrate(self):
         self.logSomething('Kalibracja!')
         self.dialog = CalibrateDialogController()
+        self.dialog.calibrateGetValue.clicked.connect(self.dialogGetValueClicked)
+        self.dialog.calibrateInsertValue.clicked.connect(self.dialogInsertValueClicked)
+        self.dialog.calibrate.clicked.connect(self.dialogCalibrateClicked)
         self.dialog.show()
 
     def stopButtonAction(self):
@@ -153,7 +160,8 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         """
         while self.alive.isSet():
             if self.usb_hid.isHidden():
-                b = self.ser.readline().decode()
+                data_left = self.ser.inWaiting()  # Get the number of characters ready to be read
+                b = self.ser.read(data_left).decode()
                 if b:
                     self.logSomething(b)
             else:
@@ -184,3 +192,17 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         if self.savePressure.isChecked() and pressure is not None:
             self.file.write(pressure)
         self.file.write('\n')
+
+    def dialogGetValueClicked(self):
+        self.logSomething("Get")
+
+    def dialogInsertValueClicked(self):
+        self.logSomething("Insert")
+
+    def dialogCalibrateClicked(self):
+        self.logSomething("Calibrate")
+
+    def logSomething(self, str):
+        self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + str)
+        self.terminal.verticalScrollBar().setValue(self.terminal.verticalScrollBar().maximum())
+

@@ -6,10 +6,9 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
-
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(600, 400)
@@ -18,6 +17,8 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
         Dialog.setSizePolicy(sizePolicy)
+        Dialog.setMinimumSize(QtCore.QSize(600, 400))
+        Dialog.setMaximumSize(QtCore.QSize(600, 400))
         self.insertedWeight = QtWidgets.QLineEdit(Dialog)
         self.insertedWeight.setGeometry(QtCore.QRect(330, 30, 111, 31))
         self.insertedWeight.setObjectName("insertedWeight")
@@ -37,11 +38,14 @@ class Ui_Dialog(object):
         self.calibrateGetValue.setGeometry(QtCore.QRect(140, 30, 111, 31))
         self.calibrateGetValue.setObjectName("calibrateGetValue")
         self.tableView = QtWidgets.QTableView(Dialog)
-        self.tableView.setGeometry(QtCore.QRect(10, 80, 571, 261))
+        self.tableView.setGeometry(QtCore.QRect(10, 80, 580, 270))
         self.tableView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.tableView.setTextElideMode(QtCore.Qt.ElideRight)
         self.tableView.setObjectName("tableView")
+        self.tableView.horizontalHeader().setDefaultSectionSize(290)
+        self.tableView.horizontalHeader().setMinimumSectionSize(290)
+        self.tableView.horizontalHeader().setStretchLastSection(False)
         self.measurements = QtWidgets.QLineEdit(Dialog)
         self.measurements.setEnabled(False)
         self.measurements.setGeometry(QtCore.QRect(10, 30, 111, 31))
