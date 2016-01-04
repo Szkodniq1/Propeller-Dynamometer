@@ -9,6 +9,7 @@ from UIControllers.CalibrateDialogController import CalibrateDialogController
 import usb.core
 import usb.util
 import Functions.MiscFunctions
+import Utils.ComunicationUtils
 from UI.MainWindowUI import Ui_MainWindow
 
 __author__ = 'Piotr Gomola'
@@ -20,7 +21,6 @@ class FinalMeta(type(QtWidgets.QMainWindow), type(Ui_MainWindow)):
 
 class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=FinalMeta):
 
-
     ser = serial.Serial
     thread = None
     alive = threading.Event()
@@ -28,6 +28,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
     dev = None
     epWrite = None
     epRead = None
+    message = []
 
     def __init__(self, parent=None):
         super(MainWindowController, self).__init__(parent)
@@ -44,9 +45,10 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.connectButton.clicked.connect(self.connectButtonPushed)
         self.stopButton.clicked.connect(self.stopButtonAction)
         self.calibrateTens.clicked.connect(self.calibrate)
-
+        self.startTest.clicked.connect(self.startClicked)
 
     def saveToFileStateChanged(self, state):
+
         if state == 0:
             self.groupBox.setEnabled(False)
             self.logSomething(': Zapisywanie plikow wylaczone')
@@ -70,7 +72,6 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                     self.tabWidget.setEnabled(False)
                     self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=None, writeTimeout=3)
                     self.logSomething('Opened %s successfully' % cur_item)
-                    #self.ser.write("hello\n".encode())
                     self.StartThread()
                     if self.groupBox.isEnabled():
                         self.file = open("pomiary.txt", 'w')
@@ -135,8 +136,11 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.dialog.show()
 
     def stopButtonAction(self):
-        # TODO stop action - if com or usb opened send stop frame
-        self.logSomething("stop")
+        if self.connectButton.text() == u"Rozłącz":
+            Utils.ComunicationUtils.sendEmergencyStop(self.ser)
+            self.logSomething("Stop awaryjny")
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
 
     def StartThread(self):
         """Start the receiver thread"""
@@ -161,9 +165,18 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         while self.alive.isSet():
             if self.usb_hid.isHidden():
                 data_left = self.ser.inWaiting()  # Get the number of characters ready to be read
-                b = self.ser.read(data_left).decode()
+                b = self.ser.read(data_left)
                 if b:
-                    self.logSomething(b)
+                    byte = ord(b)
+                    # self.logSomething(b)
+                    # byte = int(format(ord(b), "x"))
+                    if Utils.ComunicationUtils.isStartFrame(byte):
+                        self.message = [byte]
+                    elif Utils.ComunicationUtils.isStopFrame(byte):
+                        self.message.append(byte)
+                        self.dataRecieved()
+                    else:
+                        self.message.append(byte)
             else:
                 try:
                     data = self.dev.read(self.epRead, 1000)
@@ -194,15 +207,34 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.file.write('\n')
 
     def dialogGetValueClicked(self):
-        self.logSomething("Get")
+        if self.connectButton.text() == u"Rozłącz":
+            Utils.ComunicationUtils.sendGetValue(self.ser)
+            self.logSomething("Wysłano rządanie podania wartości z tensometru")
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
 
     def dialogInsertValueClicked(self):
         self.logSomething("Insert")
 
     def dialogCalibrateClicked(self):
-        self.logSomething("Calibrate")
+        if self.connectButton.text() == u"Rozłącz":
+            Utils.ComunicationUtils.sendFunctionParameters(self.ser, 1297.04179, -686.12367)
+            self.logSomething("Wysłano parametry funkcji: y="+str(self.dialog.a)+"x+"+str(self.dialog.b))
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
 
-    def logSomething(self, str):
-        self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + str)
+    def logSomething(self, string):
+        self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + string)
         self.terminal.verticalScrollBar().setValue(self.terminal.verticalScrollBar().maximum())
+
+    def dataRecieved(self):
+        string = "[%s]" % ", ".join(map(str,self.message))
+        self.logSomething(string)
+
+    def startClicked(self):
+        if self.connectButton.text() == u"Rozłącz":
+            Utils.ComunicationUtils.sendStartTest(self.ser)
+            self.logSomething("Start testu")
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
 
