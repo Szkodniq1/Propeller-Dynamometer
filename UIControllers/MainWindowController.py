@@ -28,7 +28,9 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
     dev = None
     epWrite = None
     epRead = None
+    dialog = None
     message = []
+    connectedToDeviceFlag = False
 
     def __init__(self, parent=None):
         super(MainWindowController, self).__init__(parent)
@@ -75,7 +77,8 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                     self.StartThread()
                     if self.groupBox.isEnabled():
                         self.file = open("pomiary.txt", 'w')
-                        self.writeToFile('Speed', 'Current', 'Voltage', 'Pressure')
+                        self.writeToFile('n1', 'n2', 'I1', 'I2', 'V', 'm')
+                    Utils.ComunicationUtils.sendConnected(self.ser)
                 except SerialException as e:
                     self.logSomething('%s error:\n %s' % (cur_item, e))
                     self.tabWidget.setEnabled(True)
@@ -174,7 +177,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                         self.message = [byte]
                     elif Utils.ComunicationUtils.isStopFrame(byte):
                         self.message.append(byte)
-                        self.dataRecieved()
+                        self.dataRecieved(self.message)
                     else:
                         self.message.append(byte)
             else:
@@ -189,13 +192,17 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                     if e.args == ('Operation timed out',):
                         continue
 
-    def writeToFile(self, speed=None, current=None, voltage=None, pressure=None):
-        if self.saveSpeed.isChecked() and speed is not None:
-            self.file.write(speed)
+    def writeToFile(self, speed1=None, speed2=None, current1=None, current2=None, voltage=None, pressure=None):
+        if self.saveSpeed.isChecked() and speed1 is not None and speed2 is not None:
+            self.file.write(speed1)
+            self.file.write(';')
+            self.file.write(speed2)
             if (self.saveCurrent.isChecked() or self.saveVoltage.isChecked() or self.savePressure.isChecked()):
                 self.file.write(';')
-        if self.saveCurrent.isChecked() and current is not None:
-            self.file.write(current)
+        if self.saveCurrent.isChecked() and current1 is not None and current2 is not None:
+            self.file.write(current1)
+            self.file.write(';')
+            self.file.write(current2)
             if (self.saveVoltage.isChecked() or self.savePressure.isChecked()):
                 self.file.write(';')
         if self.saveVoltage.isChecked() and voltage is not None:
@@ -227,14 +234,82 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.terminal.appendPlainText(datetime.now().strftime("%H:%M:%S.%f") + ': ' + string)
         self.terminal.verticalScrollBar().setValue(self.terminal.verticalScrollBar().maximum())
 
-    def dataRecieved(self):
-        string = "[%s]" % ", ".join(map(str,self.message))
+    def dataRecieved(self, data):
+        string = "[%s]" % ", ".join(map(str,data))
         self.logSomething(string)
+        if (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.SPEED_MEASURE:
+            self.logSomething('Otrzymano pomiar')
+            self.getMeassuresAndSaveThem(data)
+        elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.CALIBRATE_GET_VALUE:
+            self.logSomething('Otrzymano wartość')
+            self.putValueToCalibrateDialog(data)
+        elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.SET_TEST_PARAMS:
+            Utils.ComunicationUtils.sendStartTest(self.ser)
+        elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.CONNECTION:
+            self.logSomething('Podłączono do urządzenia')
+            self.connectedToDeviceFlag = True
+        else:
+            self.logSomething('Nieznany komunikat')
 
     def startClicked(self):
         if self.connectButton.text() == u"Rozłącz":
-            Utils.ComunicationUtils.sendStartTest(self.ser)
-            self.logSomething("Start testu")
+            if self.poleNumber is not None:
+                pNumber = int(self.poleNumber.text())
+            if pNumber > 1:
+                minPWM = int(self.minPWM.text())
+                maxPWM = int(self.maxPWM.text())
+                jumpPWM = int(self.jumpPWM.text())
+                if 0 <= minPWM < 100 and 0 < maxPWM <= 100 and 0 < jumpPWM < 100 and minPWM < maxPWM:
+                    Utils.ComunicationUtils.sendTestParameters(self.ser,pNumber,minPWM,maxPWM, jumpPWM)
+                    self.logSomething("Parametry testy wysłane")
+                else:
+                    self.logSomething("Źle wypełnione wartości PWM")
+            else:
+                self.logSomething("Zła wartość liczby biegunów")
+
         else:
             self.logSomething("Połączenie nie zostało nawiązane")
 
+    def putValueToCalibrateDialog(self, data):
+        i = data[1] & Utils.ComunicationUtils.NUMBER_MASK
+        i += 2
+        meassure = 0
+        for j in range(2, i):
+            jumpBit = (7*(j-2))
+            parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
+            meassure += parsedData << jumpBit
+        self.dialog.measure = meassure
+        self.dialog.measurements.setText(str(meassure))
+
+    def getMeassuresAndSaveThem(self, data):
+        i = data[1] & Utils.ComunicationUtils.NUMBER_MASK
+        i += 2
+        n1 = 0
+        n2 = 0
+        for j in range(2, i):
+            if j < 2+((i-2)/2):
+                jumpBit = (7*(j-2))
+                parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
+                n1 += parsedData << jumpBit
+            else:
+                jumpBit = int(7*(j-2-((i-2)/2)))
+                parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
+                n2 += parsedData << jumpBit
+        oldI = i
+        i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
+        i += 1
+        i1 = ((data[oldI+1]&Utils.ComunicationUtils.DATA_MASK)+((data[oldI+2]&Utils.ComunicationUtils.DATA_MASK)/100))
+        i2 = ((data[oldI+3]&Utils.ComunicationUtils.DATA_MASK)+((data[oldI+4]&Utils.ComunicationUtils.DATA_MASK)/100))
+        oldI = i
+        i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
+        i += 1
+        v = ((data[oldI+1]&Utils.ComunicationUtils.DATA_MASK)+((data[oldI+2]&Utils.ComunicationUtils.DATA_MASK)/100))
+        oldI = i+1
+        i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
+        i += 1
+        p = 0
+        for j in range(oldI, i):
+            jumpBit = (7*(j-oldI))
+            parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
+            p += parsedData << jumpBit
+        self.writeToFile(str(n1), str(n2), str(i1), str(i2), str(v), str(p))

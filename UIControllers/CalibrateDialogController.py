@@ -9,7 +9,7 @@ class FinalMeta(type(QtWidgets.QDialog), type(Ui_Dialog)):
 
 class CalibrateDialogController(QtWidgets.QDialog, Ui_Dialog):
 
-    measure = '7'
+    measure = None
     weight = None
     header = None
     data = None

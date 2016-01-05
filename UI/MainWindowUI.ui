@@ -478,16 +478,6 @@
             <property name="title">
              <string>Parametry hamowni:</string>
             </property>
-            <widget class="QLineEdit" name="poleNumber">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>50</y>
-               <width>113</width>
-               <height>22</height>
-              </rect>
-             </property>
-            </widget>
             <widget class="QLabel" name="label_6">
              <property name="geometry">
               <rect>
@@ -501,34 +491,11 @@
               <string>Liczba par biegunów:</string>
              </property>
             </widget>
-            <widget class="QLabel" name="label_8">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>90</y>
-               <width>111</width>
-               <height>16</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Napięcie zasilania:</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="supplyVoltage">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>110</y>
-               <width>113</width>
-               <height>22</height>
-              </rect>
-             </property>
-            </widget>
             <widget class="QPushButton" name="calibrateTens">
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>170</y>
+               <y>120</y>
                <width>93</width>
                <height>28</height>
               </rect>
@@ -541,13 +508,26 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>150</y>
+               <y>90</y>
                <width>81</width>
                <height>16</height>
               </rect>
              </property>
              <property name="text">
               <string>Tensometr:</string>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="poleNumber">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>50</y>
+               <width>81</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>127</number>
              </property>
             </widget>
            </widget>
@@ -568,16 +548,6 @@
              </property>
              <property name="text">
               <string>Zakres wypełnienia [%]:</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="minPWM">
-             <property name="geometry">
-              <rect>
-               <x>40</x>
-               <y>50</y>
-               <width>41</width>
-               <height>22</height>
-              </rect>
              </property>
             </widget>
             <widget class="QLabel" name="label_9">
@@ -601,7 +571,7 @@
             <widget class="QLabel" name="label_10">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>50</y>
                <width>21</width>
                <height>21</height>
@@ -614,16 +584,6 @@
              </property>
              <property name="text">
               <string>do</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="maxPWM">
-             <property name="geometry">
-              <rect>
-               <x>120</x>
-               <y>50</y>
-               <width>41</width>
-               <height>22</height>
-              </rect>
              </property>
             </widget>
             <widget class="QLabel" name="label_11">
@@ -639,42 +599,64 @@
               <string>Skok wypełnienia[%]:</string>
              </property>
             </widget>
-            <widget class="QLineEdit" name="jumpPWM">
+            <widget class="QSpinBox" name="minPWM">
+             <property name="geometry">
+              <rect>
+               <x>40</x>
+               <y>50</y>
+               <width>51</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="maxPWM">
+             <property name="geometry">
+              <rect>
+               <x>120</x>
+               <y>50</y>
+               <width>51</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="jumpPWM">
              <property name="geometry">
               <rect>
                <x>10</x>
                <y>110</y>
-               <width>41</width>
+               <width>51</width>
                <height>22</height>
               </rect>
              </property>
-            </widget>
-            <widget class="QLabel" name="label_12">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>140</y>
-               <width>261</width>
-               <height>16</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Czas pomiaru pojedynczego wypełnienia[s]:</string>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="timePWM">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>160</y>
-               <width>41</width>
-               <height>22</height>
-              </rect>
+             <property name="maximum">
+              <number>100</number>
              </property>
             </widget>
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <spacer name="horizontalSpacer">
@@ -885,7 +867,6 @@
     </item>
    </layout>
    <zorder>verticalSpacer</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -46,12 +46,12 @@
     <rect>
      <x>330</x>
      <y>10</y>
-     <width>191</width>
+     <width>201</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Nominalna wrtość odważnika:</string>
+    <string>Nominalna wrtość odważnika [g]:</string>
    </property>
   </widget>
   <widget class="QPushButton" name="calibrate">
@@ -72,12 +72,12 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>171</width>
+     <width>201</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Zmierona wartość napięcia:</string>
+    <string>Zmierona wartość napięcia [mV] :</string>
    </property>
   </widget>
   <widget class="QPushButton" name="calibrateInsertValue">

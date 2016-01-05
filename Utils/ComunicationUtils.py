@@ -36,6 +36,12 @@ EMERGENCY_STOP_FRAME = HEADER_FRAME + EMERGENCY_STOP
 START_TEST_FRAME = HEADER_FRAME + START_TEST
 CALIBRATE_GET_VALUE_FRAME = HEADER_FRAME + CALIBRATE_GET_VALUE
 CALIBRATE_SEND_PARAMS_FRAME = HEADER_FRAME + CALIBRATE_SEND_PARAMS
+SPEED_MEASURE_FRAME = HEADER_FRAME + SPEED_MEASURE
+
+FRAME_MASK = 0x80
+FUNCTION_MASK = 0x78
+NUMBER_MASK = 0x07
+DATA_MASK = 0x7F
 
 
 def isHeader(data):
@@ -121,8 +127,8 @@ def convertFunctionParamToFrame(param):
     if fract < 0:
         fract *= (-1)
     if fract < 127:
-        message.append(0x80)
         message.append(DATA_FRAME+int(fract))
+        message.append(0x80)
     else:
         lsfPart = int(fract) & 0x7F
         msfPart = int(fract) >> 7
@@ -130,3 +136,9 @@ def convertFunctionParamToFrame(param):
         message.append(DATA_FRAME+msfPart)
 
     return message
+
+
+def sendTestParameters(serial, poleNumber, minPWM, maxPWM, jumpPWM):
+    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+4, DATA_FRAME+poleNumber, DATA_FRAME+minPWM,
+               DATA_FRAME+maxPWM, DATA_FRAME+jumpPWM, STOP_TRANSMISSION_FRAME]
+    serial.write(message)

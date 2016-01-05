@@ -23,13 +23,13 @@ class Ui_Dialog(object):
         self.insertedWeight.setGeometry(QtCore.QRect(330, 30, 111, 31))
         self.insertedWeight.setObjectName("insertedWeight")
         self.label_2 = QtWidgets.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(330, 10, 191, 16))
+        self.label_2.setGeometry(QtCore.QRect(330, 10, 201, 16))
         self.label_2.setObjectName("label_2")
         self.calibrate = QtWidgets.QPushButton(Dialog)
         self.calibrate.setGeometry(QtCore.QRect(440, 360, 141, 28))
         self.calibrate.setObjectName("calibrate")
         self.label = QtWidgets.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(10, 10, 171, 16))
+        self.label.setGeometry(QtCore.QRect(10, 10, 201, 16))
         self.label.setObjectName("label")
         self.calibrateInsertValue = QtWidgets.QPushButton(Dialog)
         self.calibrateInsertValue.setGeometry(QtCore.QRect(460, 30, 121, 31))
@@ -57,9 +57,9 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.label_2.setText(_translate("Dialog", "Nominalna wrtość odważnika:"))
+        self.label_2.setText(_translate("Dialog", "Nominalna wrtość odważnika [g]:"))
         self.calibrate.setText(_translate("Dialog", "Kalibruj"))
-        self.label.setText(_translate("Dialog", "Zmierona wartość napięcia:"))
+        self.label.setText(_translate("Dialog", "Zmierona wartość napięcia [mV] :"))
         self.calibrateInsertValue.setText(_translate("Dialog", "Wprowadź pomiar"))
         self.calibrateGetValue.setText(_translate("Dialog", "Dokonaj pomiaru"))
 

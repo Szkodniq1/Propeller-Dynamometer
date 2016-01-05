@@ -2,13 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d5ce193f-df98-44a8-a7c4-82b45c1e31c0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Utils/ComunicationUtils.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Utils/ComunicationConstantsUtils.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UI/CalibrateDialogUI.ui" afterPath="$PROJECT_DIR$/UI/CalibrateDialogUI.ui" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UI/MainWindowUI.ui" afterPath="$PROJECT_DIR$/UI/MainWindowUI.ui" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UI/CalibrateDialogUI.py" afterPath="$PROJECT_DIR$/UI/CalibrateDialogUI.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UI/MainWindowUI.py" afterPath="$PROJECT_DIR$/UI/MainWindowUI.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UIControllers/CalibrateDialogController.py" afterPath="$PROJECT_DIR$/UIControllers/CalibrateDialogController.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UIControllers/MainWindowController.py" afterPath="$PROJECT_DIR$/UIControllers/MainWindowController.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Utils/ComunicationUtils.py" afterPath="$PROJECT_DIR$/Utils/ComunicationUtils.py" />
     </list>
     <ignored path="PropellerDynamometer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,7 +24,7 @@
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/PropellerDynamometer$MainWindow.coverage" NAME="MainWindow Coverage Results" MODIFIED="1449649039198" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/UI" />
-    <SUITE FILE_PATH="coverage/PropellerDynamometer$main.coverage" NAME="main Coverage Results" MODIFIED="1451866218031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PropellerDynamometer$main.coverage" NAME="main Coverage Results" MODIFIED="1451984589177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/PropellerDynamometer$PropelerDynamometer.coverage" NAME="PropelerDynamometer Coverage Results" MODIFIED="1444636670360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/UI" />
     <SUITE FILE_PATH="coverage/PropellerDynamometer$untitled.coverage" NAME="untitled Coverage Results" MODIFIED="1447261200964" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/UI" />
     <SUITE FILE_PATH="coverage/PropellerDynamometer$PropellerDynamometer.coverage" NAME="PropellerDynamometer Coverage Results" MODIFIED="1447261204352" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/UI" />
@@ -40,42 +41,39 @@
       <file leaf-file-name="MainWindowController.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/UIControllers/MainWindowController.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.31656805">
-              <caret line="190" column="0" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
+            <state vertical-scroll-proportion="1.1272142">
+              <caret line="283" column="44" selection-start-line="283" selection-start-column="44" selection-end-line="283" selection-end-column="44" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
-                <element signature="e#821#959#0" expanded="false" />
-                <element signature="e#1000#1113#0" expanded="false" />
-                <element signature="e#1153#1467#0" expanded="false" />
-                <element signature="e#1523#1765#0" expanded="false" />
-                <element signature="e#1810#1921#0" expanded="false" />
-                <element signature="e#1961#3302#0" expanded="false" />
-                <element signature="e#3344#5176#0" expanded="false" />
-                <element signature="e#5211#5565#0" expanded="false" />
-                <element signature="e#5607#5841#0" expanded="false" />
-                <element signature="e#5878#6123#0" expanded="false" />
-                <element signature="e#6159#6411#0" expanded="false" />
-                <element signature="e#6456#7682#0" expanded="false" />
-                <element signature="e#7774#8551#0" expanded="false" />
-                <element signature="e#8598#8860#0" expanded="false" />
-                <element signature="e#8910#8937#0" expanded="false" />
-                <element signature="e#8985#9307#0" expanded="false" />
-                <element signature="e#9353#9534#0" expanded="false" />
-                <element signature="e#9572#9656#0" expanded="false" />
-                <element signature="e#9694#9922#0" expanded="false" />
+                <element signature="e#873#1011#0" expanded="false" />
+                <element signature="e#1052#1165#0" expanded="false" />
+                <element signature="e#1205#1519#0" expanded="false" />
+                <element signature="e#1575#1817#0" expanded="false" />
+                <element signature="e#1862#1973#0" expanded="false" />
+                <element signature="e#3455#5287#0" expanded="false" />
+                <element signature="e#5322#5676#0" expanded="false" />
+                <element signature="e#5718#5952#0" expanded="false" />
+                <element signature="e#5989#6234#0" expanded="false" />
+                <element signature="e#6270#6522#0" expanded="false" />
+                <element signature="e#7927#8896#0" expanded="false" />
+                <element signature="e#8943#9205#0" expanded="false" />
+                <element signature="e#9255#9282#0" expanded="false" />
+                <element signature="e#9330#9652#0" expanded="false" />
+                <element signature="e#9698#9879#0" expanded="false" />
+                <element signature="e#10887#11731#0" expanded="false" />
+                <element signature="e#11788#12147#0" expanded="false" />
+                <element signature="e#12202#13599#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CalibrateDialogController.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/UIControllers/CalibrateDialogController.py">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="59" column="19" selection-start-line="59" selection-start-column="19" selection-end-line="59" selection-end-column="19" />
-              <folding>
-                <element signature="e#2030#3021#0" expanded="false" />
-              </folding>
+              <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -84,16 +82,18 @@
         <entry file="file://$PROJECT_DIR$/Utils/ComunicationUtils.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+              <caret line="138" column="0" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
               <folding>
-                <element signature="e#1582#1654#0" expanded="false" />
-                <element signature="e#1685#1772#0" expanded="false" />
-                <element signature="e#1802#1888#0" expanded="false" />
-                <element signature="e#1926#2035#0" expanded="false" />
-                <element signature="e#2069#2174#0" expanded="false" />
-                <element signature="e#2208#2313#0" expanded="false" />
-                <element signature="e#2346#2460#0" expanded="false" />
-                <element signature="e#2956#4027#0" expanded="false" />
+                <element signature="e#1709#1781#0" expanded="false" />
+                <element signature="e#1812#1899#0" expanded="false" />
+                <element signature="e#1929#2015#0" expanded="false" />
+                <element signature="e#2053#2162#0" expanded="false" />
+                <element signature="e#2196#2301#0" expanded="false" />
+                <element signature="e#2335#2440#0" expanded="false" />
+                <element signature="e#2473#2587#0" expanded="false" />
+                <element signature="e#2636#3036#0" expanded="false" />
+                <element signature="e#3083#4154#0" expanded="false" />
+                <element signature="e#4230#4432#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -128,8 +128,9 @@
         <option value="$PROJECT_DIR$/UI/MainWindowUI.py" />
         <option value="$PROJECT_DIR$/Functions/CommunicationFunctions.py" />
         <option value="$PROJECT_DIR$/Utils/ComunicationConstantsUtils.py" />
-        <option value="$PROJECT_DIR$/UIControllers/CalibrateDialogController.py" />
         <option value="$PROJECT_DIR$/Utils/ComunicationUtils.py" />
+        <option value="$PROJECT_DIR$/UIControllers/CalibrateDialogController.py" />
+        <option value="$PROJECT_DIR$/pomiary.txt" />
         <option value="$PROJECT_DIR$/UIControllers/MainWindowController.py" />
       </list>
     </option>
@@ -142,7 +143,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-9" />
     <option name="y" value="-9" />
-    <option name="width" value="1938" />
+    <option name="width" value="1924" />
     <option name="height" value="1048" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -186,34 +187,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Propeller Dynamometer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PropellerDynamometer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Propeller Dynamometer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Utils" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PropellerDynamometer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Propeller Dynamometer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="UIControllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -558,27 +531,27 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
+    <frame x="-9" y="-9" width="1924" height="1048" extended-state="1" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1323687" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14200863" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882884" sideWeight="0.49356914" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20067644" sideWeight="0.53590566" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3277027" sideWeight="0.5172786" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32807216" sideWeight="0.4640943" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882884" sideWeight="0.48285103" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882884" sideWeight="0.49571276" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20067644" sideWeight="0.7738478" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3277027" sideWeight="0.47840172" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3277027" sideWeight="0.4913607" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2626832" sideWeight="0.7019438" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882884" sideWeight="0.4914255" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3277027" sideWeight="0.4827214" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42502818" sideWeight="0.79689175" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35022524" sideWeight="0.75830656" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32807216" sideWeight="0.44694534" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -602,24 +575,16 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="108" />
+      <option name="time" value="162" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="Utils.ComunicationUtils.STOP_TRANSMISSION_FRAME" language="Python" />
-        <watch expression="self.a" language="Python" />
-        <watch expression="self.b" language="Python" />
+        <watch expression="len(data)" language="Python" />
+        <watch expression="data[i] &amp; Utils.ComunicationUtils.NUMBER_MASK" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/UI/MainWindowUI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -893,24 +858,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/UI/CalibrateDialogUI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="10" column="8" selection-start-line="10" selection-start-column="8" selection-end-line="10" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharm50/system/python_stubs/-1442825926/builtins.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334">
           <caret line="5611" column="8" selection-start-line="5611" selection-start-column="8" selection-end-line="5611" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -942,69 +893,86 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/UI/CalibrateDialogUI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.43403694">
+          <caret line="49" column="25" selection-start-line="49" selection-start-column="13" selection-end-line="49" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/UIControllers/CalibrateDialogController.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.12638581">
+          <caret line="45" column="22" selection-start-line="45" selection-start-column="22" selection-end-line="45" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/UI/MainWindowUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.35745937">
+        <state vertical-scroll-proportion="0.53539824">
           <caret line="11" column="34" selection-start-line="11" selection-start-column="34" selection-end-line="11" selection-end-column="34" />
-          <folding>
-            <element signature="e#314#21096#0" expanded="false" />
-            <element signature="e#21147#25720#0" expanded="false" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pomiary.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Utils/ComunicationUtils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+          <caret line="138" column="0" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
           <folding>
-            <element signature="e#1582#1654#0" expanded="false" />
-            <element signature="e#1685#1772#0" expanded="false" />
-            <element signature="e#1802#1888#0" expanded="false" />
-            <element signature="e#1926#2035#0" expanded="false" />
-            <element signature="e#2069#2174#0" expanded="false" />
-            <element signature="e#2208#2313#0" expanded="false" />
-            <element signature="e#2346#2460#0" expanded="false" />
-            <element signature="e#2956#4027#0" expanded="false" />
+            <element signature="e#1709#1781#0" expanded="false" />
+            <element signature="e#1812#1899#0" expanded="false" />
+            <element signature="e#1929#2015#0" expanded="false" />
+            <element signature="e#2053#2162#0" expanded="false" />
+            <element signature="e#2196#2301#0" expanded="false" />
+            <element signature="e#2335#2440#0" expanded="false" />
+            <element signature="e#2473#2587#0" expanded="false" />
+            <element signature="e#2636#3036#0" expanded="false" />
+            <element signature="e#3083#4154#0" expanded="false" />
+            <element signature="e#4230#4432#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/UIControllers/CalibrateDialogController.py">
+    <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="59" column="19" selection-start-line="59" selection-start-column="19" selection-end-line="59" selection-end-column="19" />
-          <folding>
-            <element signature="e#2030#3021#0" expanded="false" />
-          </folding>
+          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/UIControllers/MainWindowController.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31656805">
-          <caret line="190" column="0" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
+        <state vertical-scroll-proportion="1.1272142">
+          <caret line="283" column="44" selection-start-line="283" selection-start-column="44" selection-end-line="283" selection-end-column="44" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
-            <element signature="e#821#959#0" expanded="false" />
-            <element signature="e#1000#1113#0" expanded="false" />
-            <element signature="e#1153#1467#0" expanded="false" />
-            <element signature="e#1523#1765#0" expanded="false" />
-            <element signature="e#1810#1921#0" expanded="false" />
-            <element signature="e#1961#3302#0" expanded="false" />
-            <element signature="e#3344#5176#0" expanded="false" />
-            <element signature="e#5211#5565#0" expanded="false" />
-            <element signature="e#5607#5841#0" expanded="false" />
-            <element signature="e#5878#6123#0" expanded="false" />
-            <element signature="e#6159#6411#0" expanded="false" />
-            <element signature="e#6456#7682#0" expanded="false" />
-            <element signature="e#7774#8551#0" expanded="false" />
-            <element signature="e#8598#8860#0" expanded="false" />
-            <element signature="e#8910#8937#0" expanded="false" />
-            <element signature="e#8985#9307#0" expanded="false" />
-            <element signature="e#9353#9534#0" expanded="false" />
-            <element signature="e#9572#9656#0" expanded="false" />
-            <element signature="e#9694#9922#0" expanded="false" />
+            <element signature="e#873#1011#0" expanded="false" />
+            <element signature="e#1052#1165#0" expanded="false" />
+            <element signature="e#1205#1519#0" expanded="false" />
+            <element signature="e#1575#1817#0" expanded="false" />
+            <element signature="e#1862#1973#0" expanded="false" />
+            <element signature="e#3455#5287#0" expanded="false" />
+            <element signature="e#5322#5676#0" expanded="false" />
+            <element signature="e#5718#5952#0" expanded="false" />
+            <element signature="e#5989#6234#0" expanded="false" />
+            <element signature="e#6270#6522#0" expanded="false" />
+            <element signature="e#7927#8896#0" expanded="false" />
+            <element signature="e#8943#9205#0" expanded="false" />
+            <element signature="e#9255#9282#0" expanded="false" />
+            <element signature="e#9330#9652#0" expanded="false" />
+            <element signature="e#9698#9879#0" expanded="false" />
+            <element signature="e#10887#11731#0" expanded="false" />
+            <element signature="e#11788#12147#0" expanded="false" />
+            <element signature="e#12202#13599#0" expanded="false" />
           </folding>
         </state>
       </provider>
