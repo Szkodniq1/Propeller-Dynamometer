@@ -31,16 +31,8 @@ class CalibrateDialogController(QtWidgets.QDialog, Ui_Dialog):
         self.tableView.horizontalHeader()
 
     def connectSignals(self):
-        # self.calibrateGetValue.clicked.connect(self.getValueClicked)
         self.calibrateInsertValue.clicked.connect(self.insertValueClicked)
         self.calibrate.clicked.connect(self.calibrateClicked)
-
-    # def getValueClicked(self):
-    #     if self.measure == '7':
-    #         self.measure = '2'
-    #     else:
-    #         self.measure = '7'
-    #     self.measurements.setText(self.measure)
 
     def insertValueClicked(self):
         self.weight = self.insertedWeight.text()
