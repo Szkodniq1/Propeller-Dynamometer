@@ -38,7 +38,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
     connectedToDeviceFlag = False
 
     def __init__(self, parent=None):
-        super(MainWindowController, self).__init__()
+        super(MainWindowController, self).__init__(parent)
         self.setupUi(self)
         self.fill_ports_list()
         self.connectSignals()
@@ -57,6 +57,8 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.actionZamknij.triggered.connect(self.closeWindow)
         self.actionPomoc.triggered.connect(self.helpClicked)
         self.actionAutorzy.triggered.connect(self.authorsClicked)
+        self.quickSend.clicked.connect(self.interpretLineMessage)
+        self.quickMessage.returnPressed.connect(self.interpretLineMessage)
 
     def saveToFileStateChanged(self, state):
 
@@ -85,23 +87,11 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                     self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=None, writeTimeout=3)
                     self.logSomething('Opened %s successfully' % cur_item)
                     self.StartThread()
-                    if self.groupBox.isEnabled():
-                        if self.fileName.text() is not None:
-                            filename = self.fileName.text()+".txt"
-                            self.file = open(filename, 'w')
-                            self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
-                        else:
-                            self.logSomething("Błędna nazwa pliku, test zostanie zapisany z nazwą aktualnej daty")
-                            self.file = open(datetime.now().strftime("%y%m%d%H%M%S")+".txt", 'w')
-                            self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
-                        self.groupBox.setEnabled(False)
-                        self.saveToFile.setEnabled(False)
+
                     Utils.ComunicationUtils.sendConnected(self.ser)
                 except SerialException as e:
                     self.logSomething('%s error:\n %s' % (cur_item, e))
                     self.tabWidget.setEnabled(True)
-                    self.groupBox.setEnabled(True)
-                    self.saveToFile.setEnabled(True)
                     self.connectButton.setText(u"Połącz")
 
         else:
@@ -109,12 +99,8 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
             if self.ser.isOpen():
                 self.StopThread()
                 self.tabWidget.setEnabled(True)
-                self.groupBox.setEnabled(True)
-                self.saveToFile.setEnabled(True)
                 self.ser.close()
                 self.logSomething('Closed %s successfully' % cur_item)
-                if self.groupBox.isEnabled():
-                    self.file.close()
 
     def usbHIDConnection(self):
         if self.vendorID.text() is not "" and self.productID.text() is not "" and len(
@@ -189,19 +175,23 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         """
         while self.alive.isSet():
             if self.usb_hid.isHidden():
-                data_left = self.ser.inWaiting()  # Get the number of characters ready to be read
+                data_left = self.ser.inWaiting()
                 b = self.ser.read(data_left)
                 if b:
-                    byte = ord(b)
-                    # self.logSomething(b)
-                    # byte = int(format(ord(b), "x"))
-                    if Utils.ComunicationUtils.isStartFrame(byte):
-                        self.message = [byte]
-                    elif Utils.ComunicationUtils.isStopFrame(byte):
-                        self.message.append(byte)
-                        self.dataRecieved(self.message)
-                    else:
-                        self.message.append(byte)
+                    for i in range(0, len(b)):
+                        if type(b[i]) == int:
+                            byte = b[i]
+                        elif type(b[i]) == str:
+                            byte = ord(b[i])
+                        if Utils.ComunicationUtils.isStartFrame(byte):
+                            self.message = [byte]
+                        elif Utils.ComunicationUtils.isStopFrame(byte):
+                            self.message.append(byte)
+                            self.dataRecieved(self.message)
+                        elif len(self.message) > 500:
+                            self.message = []
+                        else:
+                            self.message.append(byte)
             else:
                 try:
                     data = self.dev.read(self.epRead, 1000)
@@ -265,7 +255,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
     def dataRecieved(self, data):
         string = "[%s]" % ", ".join(map(str,data))
         self.logSomething(string)
-        if (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.SPEED_MEASURE:
+        if (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.MEASURE:
             self.logSomething('Otrzymano pomiar')
             self.getMeassuresAndSaveThem(data)
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.CALIBRATE_GET_VALUE:
@@ -275,7 +265,28 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
             Utils.ComunicationUtils.sendStartTest(self.ser)
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.CONNECTION:
             self.logSomething('Podłączono do urządzenia')
+            self.logSomething('Przed rozpoczęciem testów skalibruj tensometr oraz ustaw parametry testu, następnie '
+                              'naciśnij przycisk Start.')
             self.connectedToDeviceFlag = True
+        elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.START_TEST:
+            if self.groupBox.isEnabled():
+                self.groupBox.setEnabled(False)
+                self.saveToFile.setEnabled(False)
+                if self.fileName.text() is not None:
+                    filename = self.fileName.text()+".txt"
+                    self.file = open(filename, 'w')
+                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
+                else:
+                    self.logSomething("Błędna nazwa pliku, test zostanie zapisany z nazwą aktualnej daty")
+                    self.file = open(datetime.now().strftime("%y%m%d%H%M%S")+".txt", 'w')
+                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
+        elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.STOP_TEST:
+            self.groupBox.setEnabled(True)
+            self.saveToFile.setEnabled(True)
+            self.ser.close()
+            self.logSomething('Closed %s successfully' % cur_item)
+            if self.groupBox.isEnabled():
+                self.file.close()
         else:
             self.logSomething('Nieznany komunikat')
 
@@ -360,6 +371,11 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.currentMeterI2.setText(current2)
         self.voltageMeter.setText(voltage)
         self.pressureMeter.setText(pressure)
+
+    def interpretLineMessage (self):
+        message = self.quickMessage.text()
+        self.logSomething(message)
+        self.quickMessage.clear()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
