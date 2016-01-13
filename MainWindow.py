@@ -23,7 +23,6 @@ class FinalMeta(type(QtWidgets.QMainWindow), type(Ui_MainWindow)):
 
 
 class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=FinalMeta):
-
     ser = serial.Serial
     thread = None
     alive = threading.Event()
@@ -42,7 +41,6 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.setupUi(self)
         self.fill_ports_list()
         self.connectSignals()
-        self.fileName.setText(datetime.now().strftime("%y%m%d%H%M%S"))
 
     def fill_ports_list(self):
         for portname in Functions.SerialFunctions.enumerateSerialPorts():
@@ -59,6 +57,12 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.actionAutorzy.triggered.connect(self.authorsClicked)
         self.quickSend.clicked.connect(self.interpretLineMessage)
         self.quickMessage.returnPressed.connect(self.interpretLineMessage)
+        self.rescanButton.clicked.connect(self.rescanButtonClicked)
+
+    def rescanButtonClicked(self):
+        self.uartPortList.clear()
+        for portname in Functions.SerialFunctions.enumerateSerialPorts():
+            self.uartPortList.addItem(portname)
 
     def saveToFileStateChanged(self, state):
 
@@ -71,12 +75,11 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
 
     def connectButtonPushed(self):
         if self.usb_hid.isHidden():
-            self.uartConnection()
+            self.uartConnection(self.uartPortList.currentText(), int(self.uartBaudRateList.currentText()))
         else:
-            self.usbHIDConnection()
+            self.usbHIDConnection(self.vendorID.text(), self.productID.text())
 
-    def uartConnection(self):
-        cur_item = self.uartPortList.currentText()
+    def uartConnection(self, cur_item, baudrate):
         if self.connectButton.text() == u"Połącz":
             self.connectButton.setText(u"Rozłącz")
             if cur_item is not None:
@@ -84,7 +87,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                 try:
                     self.tabWidget.setEnabled(False)
 
-                    self.ser = serial.Serial(port=fullname, baudrate=9600, timeout=None, writeTimeout=3)
+                    self.ser = serial.Serial(port=fullname, baudrate=baudrate, timeout=None, writeTimeout=3)
                     self.logSomething('Opened %s successfully' % cur_item)
                     self.StartThread()
 
@@ -102,11 +105,10 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                 self.ser.close()
                 self.logSomething('Closed %s successfully' % cur_item)
 
-    def usbHIDConnection(self):
-        if self.vendorID.text() is not "" and self.productID.text() is not "" and len(
-                self.vendorID.text()) is 4 and len(self.productID.text()) is 4:
-            vendorId = Functions.MiscFunctions.stringToHex(self.vendorID.text())  # 0x477
-            productId = Functions.MiscFunctions.stringToHex(self.productID.text())  # 0x5620
+    def usbHIDConnection(self, vendorIDText, productIDText):
+        if vendorIDText is not "" and productIDText is not "" and len(vendorIDText) is 4 and len(productIDText) is 4:
+            vendorId = Functions.MiscFunctions.stringToHex(vendorIDText)  # 0x477
+            productId = Functions.MiscFunctions.stringToHex(productIDText)  # 0x5620
             if self.connectButton.text() == u"Połącz":
                 self.connectButton.setText(u"Rozłącz")
                 self.tabWidget.setEnabled(False)
@@ -121,9 +123,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                 assert self.epWrite is not None
                 assert self.epRead is not None
                 self.StartThread()
-                if self.groupBox.isEnabled():
-                    self.file = open("pomiary.txt", 'w')
-                    self.writeToFile('Speed', 'Current', 'Voltage', 'Pressure')
+
             else:
                 self.connectButton.setText(u"Połącz")
                 self.tabWidget.setEnabled(True)
@@ -131,8 +131,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                 self.epRead = None
                 self.epWrite = None
                 self.StopThread()
-                if self.groupBox.isEnabled():
-                    self.file.close()
+
         elif self.vendorID.text() is "" or self.productID.text() is "":
             self.logSomething('Please, fill all fileds needed to connect via USB HID.')
         else:
@@ -204,7 +203,8 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                     if e.args == ('Operation timed out',):
                         continue
 
-    def writeToFile(self, pwm=None, speed1=None, speed2=None, current1=None, current2=None, voltage=None, pressure=None):
+    def writeToFile(self, pwm=None, speed1=None, speed2=None, current1=None, current2=None, voltage=None,
+                    pressure=None):
         if self.file is not None:
             self.file.write(pwm)
             self.file.write(';')
@@ -242,7 +242,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         if self.connectButton.text() == u"Rozłącz":
             if self.dialog.a is not None:
                 Utils.ComunicationUtils.sendFunctionParameters(self.ser, self.dialog.a, self.dialog.b)
-                self.logSomething("Wysłano parametry funkcji: y="+str(self.dialog.a)+"x+"+str(self.dialog.b))
+                self.logSomething("Wysłano parametry funkcji: y=" + str(self.dialog.a) + "x+" + str(self.dialog.b))
             else:
                 self.logSomething("Za mało pomiarów")
         else:
@@ -253,7 +253,7 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.terminal.verticalScrollBar().setValue(self.terminal.verticalScrollBar().maximum())
 
     def dataRecieved(self, data):
-        string = "[%s]" % ", ".join(map(str,data))
+        string = "[%s]" % ", ".join(map(str, data))
         self.logSomething(string)
         if (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.MEASURE:
             self.logSomething('Otrzymano pomiar')
@@ -262,6 +262,17 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
             self.logSomething('Otrzymano wartość')
             self.putValueToCalibrateDialog(data)
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.SET_TEST_PARAMS:
+            if self.groupBox.isEnabled():
+                self.groupBox.setEnabled(False)
+                self.saveToFile.setEnabled(False)
+                if self.fileName.text() is not None and self.fileName.text() != "":
+                    filename = self.fileName.text() + ".txt"
+                    self.file = open(filename, 'w')
+                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
+                else:
+                    self.logSomething("Test zostanie zapisany z nazwą aktualnej daty")
+                    self.file = open(datetime.now().strftime("%y%m%d%H%M%S") + ".txt", 'w')
+                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
             Utils.ComunicationUtils.sendStartTest(self.ser)
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.CONNECTION:
             self.logSomething('Podłączono do urządzenia')
@@ -269,52 +280,46 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                               'naciśnij przycisk Start.')
             self.connectedToDeviceFlag = True
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.START_TEST:
-            if self.groupBox.isEnabled():
-                self.groupBox.setEnabled(False)
-                self.saveToFile.setEnabled(False)
-                if self.fileName.text() is not None:
-                    filename = self.fileName.text()+".txt"
-                    self.file = open(filename, 'w')
-                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
-                else:
-                    self.logSomething("Błędna nazwa pliku, test zostanie zapisany z nazwą aktualnej daty")
-                    self.file = open(datetime.now().strftime("%y%m%d%H%M%S")+".txt", 'w')
-                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
+            self.logSomething('Start testu')
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.STOP_TEST:
             self.groupBox.setEnabled(True)
             self.saveToFile.setEnabled(True)
-            self.ser.close()
-            self.logSomething('Closed %s successfully' % cur_item)
-            if self.groupBox.isEnabled():
+            self.logSomething("Koniec testu")
+            if self.file is not None:
+                self.logSomething('Zamknieto plik')
                 self.file.close()
         else:
             self.logSomething('Nieznany komunikat')
 
     def startClicked(self):
         if self.connectButton.text() == u"Rozłącz":
-            if self.poleNumber is not None:
-                pNumber = int(self.poleNumber.text())
-            if pNumber > 1:
-                minPWM = int(self.minPWM.text())
-                maxPWM = int(self.maxPWM.text())
-                jumpPWM = int(self.jumpPWM.text())
-                if 0 <= minPWM < 100 and 0 < maxPWM <= 100 and 0 < jumpPWM < 100 and minPWM < maxPWM:
-                    Utils.ComunicationUtils.sendTestParameters(self.ser,pNumber,minPWM,maxPWM, jumpPWM)
-                    self.logSomething("Parametry testy wysłane")
-                else:
-                    self.logSomething("Źle wypełnione wartości PWM")
-            else:
-                self.logSomething("Zła wartość liczby biegunów")
-
+            self.checkAndSendParameters(self.poleNumber.text(), self.poleNumberTwo.text(), self.minPWM.text(), self.maxPWM.text(), self.jumpPWM.text(), self.pwmTime.text())
         else:
             self.logSomething("Połączenie nie zostało nawiązane")
+
+    def checkAndSendParameters(self, poleNumberText, poleNumberTwoText, minPWMText, maxPWMText, jumpPWMText, pwmTimeText):
+        if self.poleNumber is not None:
+            pNumber = int(poleNumberText)
+            pNumber2 = int(poleNumberTwoText)
+        if pNumber > 1:
+            minPWM = int(minPWMText)
+            maxPWM = int(maxPWMText)
+            jumpPWM = int(jumpPWMText)
+            pwmTime = int(pwmTimeText)
+            if 0 <= minPWM < 100 and 0 < maxPWM <= 100 and 0 < jumpPWM < 100 and minPWM < maxPWM and pwmTime > 0:
+                Utils.ComunicationUtils.sendTestParameters(self.ser, pNumber, pNumber2, minPWM, maxPWM, jumpPWM, pwmTime)
+                self.logSomething("Parametry testu wysłane")
+            else:
+                self.logSomething("Źle wypełnione wartości PWM")
+        else:
+            self.logSomething("Zła wartość liczby par biegunów")
 
     def putValueToCalibrateDialog(self, data):
         i = data[1] & Utils.ComunicationUtils.NUMBER_MASK
         i += 2
         meassure = 0
         for j in range(2, i):
-            jumpBit = (7*(j-2))
+            jumpBit = (7 * (j - 2))
             parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
             meassure += parsedData << jumpBit
         self.dialog.measure = meassure
@@ -326,27 +331,30 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         n1 = 0
         n2 = 0
         for j in range(2, i):
-            if j < 2+((i-2)/2):
-                jumpBit = (7*(j-2))
+            if j < 2 + ((i - 2) / 2):
+                jumpBit = (7 * (j - 2))
                 parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
                 n1 += parsedData << jumpBit
             else:
-                jumpBit = int(7*(j-2-((i-2)/2)))
+                jumpBit = int(7 * (j - 2 - ((i - 2) / 2)))
                 parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
                 n2 += parsedData << jumpBit
         oldI = i
         i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
         i += 1
-        i1 = ((data[oldI+1] & Utils.ComunicationUtils.DATA_MASK)+((data[oldI+2] & Utils.ComunicationUtils.DATA_MASK)/100))
-        i2 = ((data[oldI+3] & Utils.ComunicationUtils.DATA_MASK)+((data[oldI+4] & Utils.ComunicationUtils.DATA_MASK)/100))
-        v = ((data[oldI+5] & Utils.ComunicationUtils.DATA_MASK)+((data[oldI+6] & Utils.ComunicationUtils.DATA_MASK)/100))
-        pwm = data[oldI+7] & Utils.ComunicationUtils.DATA_MASK
-        oldI = i+1
+        i1 = ((data[oldI + 1] & Utils.ComunicationUtils.DATA_MASK) + (
+        (data[oldI + 2] & Utils.ComunicationUtils.DATA_MASK) / 100))
+        i2 = ((data[oldI + 3] & Utils.ComunicationUtils.DATA_MASK) + (
+        (data[oldI + 4] & Utils.ComunicationUtils.DATA_MASK) / 100))
+        v = ((data[oldI + 5] & Utils.ComunicationUtils.DATA_MASK) + (
+        (data[oldI + 6] & Utils.ComunicationUtils.DATA_MASK) / 100))
+        pwm = data[oldI + 7] & Utils.ComunicationUtils.DATA_MASK
+        oldI = i + 1
         i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
         i += 1
         p = 0
         for j in range(oldI, i):
-            jumpBit = (7*(j-oldI))
+            jumpBit = (7 * (j - oldI))
             parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
             p += parsedData << jumpBit
         self.printMeasuresInLabels(str(pwm), str(n1), str(n2), str(i1), str(i2), str(v), str(p))
@@ -372,10 +380,44 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.voltageMeter.setText(voltage)
         self.pressureMeter.setText(pressure)
 
-    def interpretLineMessage (self):
+    def interpretLineMessage(self):
         message = self.quickMessage.text()
-        self.logSomething(message)
+        # self.logSomething(message)
+        spl = message.split(',')
+        if spl[0] == "connect":
+            self.interpretConnectComman(spl)
+        elif spl[0] == "start":
+            self.interpretStartCommand(spl)
+        elif spl[0] == "help":
+            self.interpretHelpCommand(spl)
+        else:
+            self.logSomething("Bledna komenda")
         self.quickMessage.clear()
+
+    def interpretConnectComman(self, spl):
+        if len(spl) is 4:
+            if spl[1] == "uart":
+                self.uartConnection(spl[2], spl[3])
+            elif spl[1] == "usb":
+                self.usbHIDConnection(spl[2], spl[3])
+            else:
+                self.logSomething("Bledne parametry")
+        else:
+            self.logSomething("Bledna liczba przesylanych danych")
+
+    def interpretStartCommand(self, spl):
+        if len(spl) is 7:
+            self.checkAndSendParameters(spl[1], spl[2], spl[3], spl[4], spl[5], spl[6])
+        else:
+            self.logSomething("Bledna liczba przesylanych danych")
+
+    def interpretHelpCommand(self, spl):
+        if len(spl) is 1:
+            self.logSomething("connect,[uart,usb], [serialport,vendorId], [baudrate,productId]")
+            self.logSomething("start, [poleNumberOne], [poleNumberTwo], [minimumPWM], [maximumPWM], [jumpPWM], [pwmPeriod]")
+        else:
+            self.logSomething("Bledna liczba przesylanych danych")
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])

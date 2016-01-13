@@ -139,7 +139,7 @@ def convertFunctionParamToFrame(param):
     return message
 
 
-def sendTestParameters(serial, poleNumber, minPWM, maxPWM, jumpPWM, pwmTime):
-    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+5, DATA_FRAME+poleNumber, DATA_FRAME+minPWM,
-               DATA_FRAME+maxPWM, DATA_FRAME+jumpPWM, DATA_FRAME+pwmTime, STOP_TRANSMISSION_FRAME]
+def sendTestParameters(serial, poleNumber, poleNumberTwo, minPWM, maxPWM, jumpPWM, pwmTime):
+    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+6, DATA_FRAME+poleNumber, DATA_FRAME+poleNumberTwo,
+               DATA_FRAME+minPWM, DATA_FRAME+maxPWM, DATA_FRAME+jumpPWM, DATA_FRAME+pwmTime, STOP_TRANSMISSION_FRAME]
     serial.write(message)

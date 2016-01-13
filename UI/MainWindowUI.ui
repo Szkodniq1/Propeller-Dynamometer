@@ -197,6 +197,19 @@
              </property>
             </item>
            </widget>
+           <widget class="QPushButton" name="rescanButton">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>60</y>
+              <width>93</width>
+              <height>28</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Skanuj</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="usb_hid">
            <attribute name="title">
@@ -509,19 +522,19 @@
               <rect>
                <x>10</x>
                <y>30</y>
-               <width>141</width>
+               <width>241</width>
                <height>16</height>
               </rect>
              </property>
              <property name="text">
-              <string>Liczba par biegunów:</string>
+              <string>Liczba par biegunów silnika pierwszego:</string>
              </property>
             </widget>
             <widget class="QPushButton" name="calibrateTens">
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>120</y>
+               <y>140</y>
                <width>93</width>
                <height>28</height>
               </rect>
@@ -534,7 +547,7 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>90</y>
+               <y>120</y>
                <width>81</width>
                <height>16</height>
               </rect>
@@ -548,6 +561,32 @@
               <rect>
                <x>10</x>
                <y>50</y>
+               <width>81</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>127</number>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_21">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>70</y>
+               <width>301</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Liczba par biegunów silnika drugiego (opcjonalnie):</string>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="poleNumberTwo">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>90</y>
                <width>81</width>
                <height>22</height>
               </rect>
