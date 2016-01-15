@@ -13,6 +13,7 @@ import usb.core
 import usb.util
 import Functions.MiscFunctions
 import Utils.ComunicationUtils
+import Utils.CommandUtils
 from UI.MainWindowUI import Ui_MainWindow
 
 __author__ = 'Piotr Gomola'
@@ -35,12 +36,23 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
     authorsDialog = None
     message = []
     connectedToDeviceFlag = False
+    manualWorkData = ["0","0"]
+    testDataFrame = ["0","0"]
+    loadTest = [[],[],[]]
+    underWorkFlag = False
+    isManualWork =False
+    timer = None
+    timerIterator = 0
 
     def __init__(self, parent=None):
         super(MainWindowController, self).__init__(parent)
         self.setupUi(self)
         self.fill_ports_list()
         self.connectSignals()
+        self.manualWorkStateChanged(False)
+        self.terminal.clear()
+        self.tabWidget.widget(1).setEnabled(False)
+        self.logSomething("Aby zobaczyc dostepne komendy wpisz: help")
 
     def fill_ports_list(self):
         for portname in Functions.SerialFunctions.enumerateSerialPorts():
@@ -50,14 +62,33 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.saveToFile.stateChanged.connect(self.saveToFileStateChanged)
         self.connectButton.clicked.connect(self.connectButtonPushed)
         self.stopButton.clicked.connect(self.stopButtonAction)
+        self.manualWork.stateChanged.connect(self.manualWorkStateChanged)
         self.calibrateTens.clicked.connect(self.calibrate)
-        self.startTest.clicked.connect(self.startClicked)
         self.actionZamknij.triggered.connect(self.closeWindow)
         self.actionPomoc.triggered.connect(self.helpClicked)
         self.actionAutorzy.triggered.connect(self.authorsClicked)
         self.quickSend.clicked.connect(self.interpretLineMessage)
         self.quickMessage.returnPressed.connect(self.interpretLineMessage)
         self.rescanButton.clicked.connect(self.rescanButtonClicked)
+        self.actionManual.clicked.connect(self.actionManualClicked)
+        self.engOneMin.clicked.connect(self.engOneMinClicked)
+        self.engOnePlus.clicked.connect(self.engOnePlusClicked)
+        self.engTwoMin.clicked.connect(self.engTwoMinClicked)
+        self.engTwoPlus.clicked.connect(self.engTwoPlusClicked)
+        self.engBothMin.clicked.connect(self.engBothMinClicked)
+        self.engBothPlus.clicked.connect(self.engBothPlusClicked)
+
+    def actionManualClicked(self):
+        if self.actionManual.text() == "START":
+            self.manualWorkData[0] = str(self.engOneInit.value())
+            self.manualWorkData[1] = str(self.engTwoInit.value())
+            if self.checkAndSendParameters(self.poleNumber.text(), self.poleNumberTwo.text()):
+                self.actionManual.setText("STOP")
+                self.logSomething('Start pracy manualnej')
+        else:
+            Utils.ComunicationUtils.sendStop(self.ser)
+            self.actionManual.setText("START")
+            self.logSomething('Stop pracy manualnej')
 
     def rescanButtonClicked(self):
         self.uartPortList.clear()
@@ -65,13 +96,27 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
             self.uartPortList.addItem(portname)
 
     def saveToFileStateChanged(self, state):
-
         if state == 0:
             self.groupBox.setEnabled(False)
-            self.logSomething(': Zapisywanie plikow wylaczone')
+            self.logSomething('Zapisywanie plikow wylaczone')
         else:
             self.groupBox.setEnabled(True)
-            self.logSomething(': Zapisywanie plikow wlaczone')
+            self.logSomething('Zapisywanie plikow wlaczone')
+
+    def manualWorkStateChanged(self, state):
+        if state == 0:
+            if not self.underWorkFlag:
+                self.manualGroupBox.setEnabled(False)
+                self.logSomething('Praca manualna wylaczona')
+            else:
+                self.logSomething('Nie mozna zmieniac stanu pracy manualnej podczas trwania testu.')
+        else:
+            if not self.underWorkFlag:
+                self.manualGroupBox.setEnabled(True)
+                self.logSomething('Praca manualna wlaczona')
+                self.isManualWork = True
+            else:
+                self.logSomething('Nie mozna zmieniac stanu pracy manualnej podczas trwania testu.')
 
     def connectButtonPushed(self):
         if self.usb_hid.isHidden():
@@ -203,11 +248,13 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
                     if e.args == ('Operation timed out',):
                         continue
 
-    def writeToFile(self, pwm=None, speed1=None, speed2=None, current1=None, current2=None, voltage=None,
-                    pressure=None):
+    def writeToFile(self, pwm1=None, pwm2 = None, speed1=None, speed2=None, current1=None, current2=None, voltage=None,pressure=None):
         if self.file is not None:
-            self.file.write(pwm)
+            self.file.write(pwm1)
             self.file.write(';')
+            self.file.write(pwm2)
+            if (self.saveSpeed.isChecked() or self.saveCurrent.isChecked() or self.saveVoltage.isChecked() or self.savePressure.isChecked()):
+                self.file.write(';')
             if self.saveSpeed.isChecked() and speed1 is not None and speed2 is not None:
                 self.file.write(speed1)
                 self.file.write(';')
@@ -262,57 +309,84 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
             self.logSomething('Otrzymano wartość')
             self.putValueToCalibrateDialog(data)
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.SET_TEST_PARAMS:
-            if self.groupBox.isEnabled():
-                self.groupBox.setEnabled(False)
-                self.saveToFile.setEnabled(False)
-                if self.fileName.text() is not None and self.fileName.text() != "":
-                    filename = self.fileName.text() + ".txt"
-                    self.file = open(filename, 'w')
-                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
-                else:
-                    self.logSomething("Test zostanie zapisany z nazwą aktualnej daty")
-                    self.file = open(datetime.now().strftime("%y%m%d%H%M%S") + ".txt", 'w')
-                    self.writeToFile('pwm', 'n1', 'n2', 'I1', 'I2', 'V', 'm')
-            Utils.ComunicationUtils.sendStartTest(self.ser)
+            self.openFileAndStartTest()
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.CONNECTION:
-            self.logSomething('Podłączono do urządzenia')
-            self.logSomething('Przed rozpoczęciem testów skalibruj tensometr oraz ustaw parametry testu, następnie '
-                              'naciśnij przycisk Start.')
-            self.connectedToDeviceFlag = True
+            self.connectedToDevice()
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.START_TEST:
-            self.logSomething('Start testu')
+            self.startTestRecieved()
         elif (data[1] & Utils.ComunicationUtils.FUNCTION_MASK) == Utils.ComunicationUtils.STOP_TEST:
-            self.groupBox.setEnabled(True)
-            self.saveToFile.setEnabled(True)
-            self.logSomething("Koniec testu")
-            if self.file is not None:
-                self.logSomething('Zamknieto plik')
-                self.file.close()
+            self.testStopped()
         else:
             self.logSomething('Nieznany komunikat')
 
-    def startClicked(self):
+    def startTestRecieved (self):
+        self.logSomething('Start testu')
+        self.underWorkFlag = True
+        if self.isManualWork:
+            Utils.ComunicationUtils.sendPWMFrame(self.ser,self.manualWorkData)
+        else:
+            self.timerIterator = 0
+            self.testDataFrame = [self.loadTest[0][self.timerIterator],self.loadTest[1][self.timerIterator]]
+            Utils.ComunicationUtils.sendPWMFrame(self.ser,self.testDataFrame)
+            self.timer = threading.Timer(float(self.loadTest[2][self.timerIterator])/1000,self.timerInterrupt)
+            self.timer.start()
+
+    def timerInterrupt (self):
+        self.timer.cancel()
+        self.timerIterator += 1
+        if self.timerIterator < len(self.loadTest[0]):
+            self.testDataFrame = [self.loadTest[0][self.timerIterator],self.loadTest[1][self.timerIterator]]
+            Utils.ComunicationUtils.sendPWMFrame(self.ser,self.testDataFrame)
+            self.timer = threading.Timer(float(self.loadTest[2][self.timerIterator])/1000,self.timerInterrupt)
+            self.timer.start()
+        elif self.timerIterator == len(self.loadTest[0]):
+            Utils.ComunicationUtils.sendStop(self.ser)
+
+    def testStopped (self):
+        self.groupBox.setEnabled(True)
+        self.saveToFile.setEnabled(True)
+        self.logSomething("Koniec testu")
+        if self.file is not None:
+            self.logSomething('Zamknieto plik')
+            self.file.close()
+            self.file = None
+        self.underWorkFlag = False
+
+    def connectedToDevice (self):
+        self.logSomething('Podłączono do urządzenia')
+        self.logSomething('Przed rozpoczęciem testów skalibruj tensometr oraz ustaw parametry testu, następnie '
+                          'naciśnij przycisk Start.')
+        self.connectedToDeviceFlag = True
+
+    def openFileAndStartTest (self):
+        if self.groupBox.isEnabled():
+            self.groupBox.setEnabled(False)
+            self.saveToFile.setEnabled(False)
+            if self.fileName.text() is not None and self.fileName.text() != "":
+                filename = self.fileName.text() + ".txt"
+                self.file = open(filename, 'w')
+                self.writeToFile('pwm1', 'pwm2', 'n1', 'n2', 'I1', 'I2', 'U', 'm')
+            else:
+                self.logSomething("Test zostanie zapisany z nazwą aktualnej daty")
+                self.file = open(datetime.now().strftime("%y%m%d%H%M%S") + ".txt", 'w')
+                self.writeToFile('pwm1', 'pwm2', 'n1', 'n2', 'I1', 'I2', 'U', 'm')
+        Utils.ComunicationUtils.sendStartTest(self.ser)
+
+    def checkAndSendParameters(self, poleNumberText, poleNumberTwoText):
         if self.connectButton.text() == u"Rozłącz":
-            self.checkAndSendParameters(self.poleNumber.text(), self.poleNumberTwo.text(), self.minPWM.text(), self.maxPWM.text(), self.jumpPWM.text(), self.pwmTime.text())
+            if self.poleNumber is not None:
+                pNumber = int(poleNumberText)
+                pNumber2 = int(poleNumberTwoText)
+            if pNumber > 1:
+                Utils.ComunicationUtils.sendTestParameters(self.ser, pNumber, pNumber2)
+                self.logSomething("Parametry testu wysłane")
+                return True
+            else:
+                self.logSomething("Zła wartość liczby par biegunów")
+                return False
         else:
             self.logSomething("Połączenie nie zostało nawiązane")
-
-    def checkAndSendParameters(self, poleNumberText, poleNumberTwoText, minPWMText, maxPWMText, jumpPWMText, pwmTimeText):
-        if self.poleNumber is not None:
-            pNumber = int(poleNumberText)
-            pNumber2 = int(poleNumberTwoText)
-        if pNumber > 1:
-            minPWM = int(minPWMText)
-            maxPWM = int(maxPWMText)
-            jumpPWM = int(jumpPWMText)
-            pwmTime = int(pwmTimeText)
-            if 0 <= minPWM < 100 and 0 < maxPWM <= 100 and 0 < jumpPWM < 100 and minPWM < maxPWM and pwmTime > 0:
-                Utils.ComunicationUtils.sendTestParameters(self.ser, pNumber, pNumber2, minPWM, maxPWM, jumpPWM, pwmTime)
-                self.logSomething("Parametry testu wysłane")
-            else:
-                self.logSomething("Źle wypełnione wartości PWM")
-        else:
-            self.logSomething("Zła wartość liczby par biegunów")
+            return False
 
     def putValueToCalibrateDialog(self, data):
         i = data[1] & Utils.ComunicationUtils.NUMBER_MASK
@@ -343,22 +417,29 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
         i += 1
         i1 = ((data[oldI + 1] & Utils.ComunicationUtils.DATA_MASK) + (
-        (data[oldI + 2] & Utils.ComunicationUtils.DATA_MASK) / 100))
-        i2 = ((data[oldI + 3] & Utils.ComunicationUtils.DATA_MASK) + (
-        (data[oldI + 4] & Utils.ComunicationUtils.DATA_MASK) / 100))
+        (data[oldI + 2] & Utils.ComunicationUtils.DATA_MASK) / 100- int((
+        (data[oldI + 2] & Utils.ComunicationUtils.DATA_MASK) / 100))))
+        i2 = ((data[oldI + 3] & Utils.ComunicationUtils.DATA_MASK) + ((
+        (data[oldI + 4] & Utils.ComunicationUtils.DATA_MASK) / 100)- int((
+        (data[oldI + 4] & Utils.ComunicationUtils.DATA_MASK) / 100))))
         v = ((data[oldI + 5] & Utils.ComunicationUtils.DATA_MASK) + (
-        (data[oldI + 6] & Utils.ComunicationUtils.DATA_MASK) / 100))
-        pwm = data[oldI + 7] & Utils.ComunicationUtils.DATA_MASK
+        (data[oldI + 6] & Utils.ComunicationUtils.DATA_MASK) / 100- int((
+        (data[oldI + 6] & Utils.ComunicationUtils.DATA_MASK) / 100))))
         oldI = i + 1
         i += data[i] & Utils.ComunicationUtils.NUMBER_MASK
         i += 1
         p = 0
-        for j in range(oldI, i):
-            jumpBit = (7 * (j - oldI))
+        #PWM1 i PWM2 w ramce z naciskiem
+        for j in range(oldI+1, oldI+4):
+            jumpBit = (7 * (j - (oldI+1)))
             parsedData = (data[j] & Utils.ComunicationUtils.DATA_MASK)
             p += parsedData << jumpBit
-        self.printMeasuresInLabels(str(pwm), str(n1), str(n2), str(i1), str(i2), str(v), str(p))
-        self.writeToFile(str(pwm), str(n1), str(n2), str(i1), str(i2), str(v), str(p))
+        if data[oldI] == 0x01:
+            p*=(-1)
+        pwm1 = (data[oldI+4] & Utils.ComunicationUtils.DATA_MASK)
+        pwm2 = (data[oldI+5] & Utils.ComunicationUtils.DATA_MASK)
+        self.printMeasuresInLabels(str(pwm1), str(pwm2), str(n1), str(n2), str(i1), str(i2), str(v), str(p))
+        self.writeToFile(str(pwm1), str(pwm2), str(n1), str(n2), str(i1), str(i2), str(v), str(p))
 
     def closeWindow(self):
         self.close()
@@ -371,8 +452,9 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
         self.auhtorsDialog = AuthorsDialogController()
         self.auhtorsDialog.show()
 
-    def printMeasuresInLabels(self, pwm, speed1, speed2, current1, current2, voltage, pressure):
-        self.PWMMeter.setText(pwm)
+    def printMeasuresInLabels(self, pwm1, pwm2, speed1, speed2, current1, current2, voltage, pressure):
+        self.PWMFirstMeter.setText(pwm1)
+        self.PWMSecondMeter.setText(pwm2)
         self.speedMeterN1.setText(speed1)
         self.speedMeterN2.setText(speed2)
         self.currentMeterI1.setText(current1)
@@ -382,14 +464,18 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
 
     def interpretLineMessage(self):
         message = self.quickMessage.text()
-        # self.logSomething(message)
-        spl = message.split(',')
-        if spl[0] == "connect":
+        self.logSomething("CMD: " + message)
+        spl = message.split(' ')
+        if spl[0] == Utils.CommandUtils.CONNECT_COMMAND:
             self.interpretConnectComman(spl)
-        elif spl[0] == "start":
+        elif spl[0] == Utils.CommandUtils.START_COMMAND:
             self.interpretStartCommand(spl)
-        elif spl[0] == "help":
+        elif spl[0] == Utils.CommandUtils.HELP_COMMAND:
             self.interpretHelpCommand(spl)
+        elif spl[0] == Utils.CommandUtils.LOAD_COMMAND:
+            self.interpretLoadCommand(spl)
+        elif spl[0] == Utils.CommandUtils.STOP_COMMAND:
+            self.interpretStopCommand(spl)
         else:
             self.logSomething("Bledna komenda")
         self.quickMessage.clear()
@@ -406,17 +492,178 @@ class MainWindowController(QtWidgets.QMainWindow, Ui_MainWindow, metaclass=Final
             self.logSomething("Bledna liczba przesylanych danych")
 
     def interpretStartCommand(self, spl):
-        if len(spl) is 7:
-            self.checkAndSendParameters(spl[1], spl[2], spl[3], spl[4], spl[5], spl[6])
+        if len(spl) is 2:
+            if spl[1] == "manual" and not self.underWorkFlag:
+                if not self.manualWork.isChecked():
+                    self.manualWork.setChecked(True)
+                if self.actionManual.text() == "START":
+                    self.manualWorkData[0] = str(self.engOneInit.value())
+                    self.manualWorkData[2] = str(self.engTwoInit.value())
+                    if self.checkAndSendParameters(self.poleNumber.text(), self.poleNumberTwo.text()):
+                        self.actionManual.setText("STOP")
+                        self.logSomething('Start pracy manualnej')
+            elif spl[1] == "test" and not self.underWorkFlag:
+                if len(self.loadTest[0]) > 0:
+                    if self.manualWork.isChecked():
+                        self.manualWork.setChecked(False)
+                    if self.isManualWork:
+                        self.isManualWork = False
+                    if self.checkAndSendParameters(self.poleNumber.text(), self.poleNumberTwo.text()):
+                        self.logSomething('Start testu')
+
         else:
             self.logSomething("Bledna liczba przesylanych danych")
 
     def interpretHelpCommand(self, spl):
         if len(spl) is 1:
-            self.logSomething("connect,[uart,usb], [serialport,vendorId], [baudrate,productId]")
-            self.logSomething("start, [poleNumberOne], [poleNumberTwo], [minimumPWM], [maximumPWM], [jumpPWM], [pwmPeriod]")
+            self.logSomething("Pierwszy człon to komenda, kolejne człony to parametry")
+            self.logSomething("connect [uart,usb] [serialport,vendorId] [baudrate,productId]")
+            self.logSomething("load [file.txt, absolut_path\\file.txt]")
+            self.logSomething("start [manual,test]")
+            self.logSomething("stop [manual]")
+
         else:
             self.logSomething("Bledna liczba przesylanych danych")
+
+    def interpretLoadCommand(self,spl):
+        if len(spl) is 2:
+            try:
+                f = open(spl[1],'r')
+                self.logSomething("Wczytano test z pliku.")
+                testText = f.read()
+                commands = testText.split(' ')
+                if self.checkIfCommandsHaveCorrectShape(commands):
+                    for i in range(0,len(commands)):
+                        pwmFirst = commands[i].split(',')[0][1:]
+                        pwmSecond = commands[i].split(',')[1]
+                        time = commands[i].split(',')[2][:-1]
+                        if  self.checkIfParamsAreCorrect(pwmFirst,pwmSecond,time,i):
+                            if i is 0:
+                                self.loadTest = [[],[],[]]
+                            self.loadTest[0].append(pwmFirst)
+                            self.loadTest[1].append(pwmSecond)
+                            self.loadTest[2].append(time)
+                            if i is len(commands)-1:
+                                self.logSomething("Parametry testu zostaly wczytane poprawnie.")
+
+
+            except FileNotFoundError as e:
+                self.logSomething("Nie znaleziono pliku.")
+
+        else:
+            self.logSomething("Bledna liczba przesylanych danych")
+
+    def interpretStopCommand(self,spl):
+        if len(spl) is 2:
+            if spl[1] == "manual":
+                if self.actionManual.text() == "STOP":
+                    Utils.ComunicationUtils.sendStop(self.ser)
+                    self.actionManual.setText("START")
+                    self.logSomething('Stop pracy manualnej')
+        else:
+            self.logSomething("Bledna liczba przesylanych danych")
+
+    def checkIfParamsAreCorrect(self,pwmFirst,pwmSecond,time,i):
+        if int(pwmFirst) < 0 or int(pwmFirst) > 100:
+            self.logSomething("Blad: W "+ (i+1) + " komendzie 1 parametr jest niepoprawny.")
+            return False
+        if int(pwmSecond) < 0 or int(pwmSecond) > 100:
+            self.logSomething("Blad: W "+ (i+1) + " komendzie 2 parametr jest niepoprawny.")
+            return False
+        if int(time) < 100:
+            self.logSomething("Blad: W "+ (i+1) + " komendzie 3 parametr jest niepoprawny.")
+            return False
+        return True
+
+    def checkIfCommandsHaveCorrectShape(self,commands):
+        for i in range(0,len(commands)):
+            if len(commands[i].split(',')) is not 3:
+                self.logSomething("Blad: " +(i+1)+ " komenda jest niepoprawna.")
+                return False
+            if commands[i][0] != "[" and commands[i][len(commands[i])-1] != "]":
+                self.logSomething("Blad: " +(i+1)+ " komenda jest niepoprawna.")
+                return False
+            return True
+
+    def engOneMinClicked(self):
+        self.manualWorkData[0] = self.manualEquation(self.manualWorkData[0], self.engOneJump.value(), True)
+        self.sendManualDataWork()
+
+    def engOnePlusClicked(self):
+        self.manualWorkData[0] = self.manualEquation(self.manualWorkData[0], self.engOneJump.value(), False)
+        self.sendManualDataWork()
+
+    def engTwoMinClicked(self):
+        self.manualWorkData[1] = self.manualEquation(self.manualWorkData[1], self.engOneJump.value(), True)
+        self.sendManualDataWork()
+
+    def engTwoPlusClicked(self):
+        self.manualWorkData[1] = self.manualEquation(self.manualWorkData[1], self.engOneJump.value(), False)
+        self.sendManualDataWork()
+
+    def engBothMinClicked(self):
+        self.doubleManualEquation(True)
+        self.sendManualDataWork()
+
+    def engBothPlusClicked(self):
+        self.doubleManualEquation(False)
+        self.sendManualDataWork()
+
+    def manualEquation(self, data, jump, sub):
+        if self.connectButton.text() == u"Rozłącz":
+            if sub:
+                number = int(data) - jump
+                if number < 0:
+                    number = 0
+                data = str(number)
+                return data
+            else:
+                number = int(data) + jump
+                if number > 100:
+                    number = 100
+                data = str(number)
+                return data
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
+            return data
+
+    def doubleManualEquation(self, sub):
+        if self.connectButton.text() == u"Rozłącz":
+            if sub:
+                number1 = int(self.manualWorkData[0]) - self.engBothJump.value()
+                number2 = int(self.manualWorkData[1]) - self.engBothJump.value()
+                if number1 < 0:
+                    number1 = 0
+                if number2 < 0:
+                    number2 = 0
+                self.manualWorkData[0] = str(number1)
+                self.manualWorkData[1] = str(number2)
+            else:
+                number1 = int(self.manualWorkData[0]) + self.engBothJump.value()
+                number2 = int(self.manualWorkData[1]) + self.engBothJump.value()
+                if number1 > 100:
+                    number1 = 100
+                if number2 > 100:
+                    number2 = 100
+                self.manualWorkData[0] = str(number1)
+                self.manualWorkData[1] = str(number2)
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
+
+    def sendManualDataWork(self):
+        if self.connectButton.text() == u"Rozłącz":
+            Utils.ComunicationUtils.sendPWMFrame(self.ser, self.manualWorkData)
+        else:
+            self.logSomething("Połączenie nie zostało nawiązane")
+
+    def closeEvent(self,event):
+        self.logSomething('Program zostal zamkniety')
+        if self.file is not None:
+            self.logSomething('Zamknieto plik')
+            self.file.close()
+            self.file = None
+        if self.connectButton.text() == u"Rozłącz":
+            self.connectButtonPushed()
 
 
 if __name__ == '__main__':

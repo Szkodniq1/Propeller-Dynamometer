@@ -20,6 +20,7 @@ SET_TEST_PARAMS = 0x30
 START_TEST = 0x38
 MEASURE = 0x40
 STOP_TEST = 0x48
+PWM = 0x50
 
 
 MODULE_ERROR = 0x78
@@ -38,6 +39,7 @@ CALIBRATE_GET_VALUE_FRAME = HEADER_FRAME + CALIBRATE_GET_VALUE
 CALIBRATE_SEND_PARAM_A_FRAME = HEADER_FRAME + CALIBRATE_SEND_PARAM_A
 CALIBRATE_SEND_PARAM_B_FRAME = HEADER_FRAME + CALIBRATE_SEND_PARAM_B
 MEASURE_FRAME = HEADER_FRAME + MEASURE
+MANUAL_PARAMS_FRAME = HEADER_FRAME + PWM
 
 FRAME_MASK = 0x80
 FUNCTION_MASK = 0x78
@@ -139,7 +141,22 @@ def convertFunctionParamToFrame(param):
     return message
 
 
-def sendTestParameters(serial, poleNumber, poleNumberTwo, minPWM, maxPWM, jumpPWM, pwmTime):
-    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+6, DATA_FRAME+poleNumber, DATA_FRAME+poleNumberTwo,
-               DATA_FRAME+minPWM, DATA_FRAME+maxPWM, DATA_FRAME+jumpPWM, DATA_FRAME+pwmTime, STOP_TRANSMISSION_FRAME]
+def sendTestParameters(serial, poleNumber, poleNumberTwo):
+    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+2, DATA_FRAME+poleNumber, DATA_FRAME+poleNumberTwo,
+               STOP_TRANSMISSION_FRAME]
     serial.write(message)
+
+
+def sendPWMFrame(serial, manual):
+
+    message = [START_TRANSMISSION_FRAME, PWM + 2, DATA_FRAME + int(manual[0]), DATA_FRAME + int(manual[1]),
+               STOP_TRANSMISSION_FRAME]
+    serial.write(message)
+
+
+
+
+def sendStop(serial):
+    message = [START_TRANSMISSION_FRAME, HEADER_FRAME+STOP_TEST, STOP_TRANSMISSION_FRAME]
+    serial.write(message)
+
