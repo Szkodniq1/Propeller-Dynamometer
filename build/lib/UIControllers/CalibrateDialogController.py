@@ -36,18 +36,43 @@ class CalibrateDialogController(QtWidgets.QDialog, Ui_Dialog):
 
     def insertValueClicked(self):
         self.weight = self.insertedWeight.text()
-        if self.data == [('', '')]:
-            self.data = [(self.measure,self.weight)]
-            self.dataXInt = [int(self.measure)]
-            self.dataYInt = [int(self.weight)]
+        test = self.data[:]
+        test.append((self.measure,self.weight))
+        if self.checkIfFunctionIsNotConstant(test):
+            if self.data == [('', '')]:
+                self.data = [(self.measure,self.weight)]
+                self.dataXInt = [int(self.measure)]
+                self.dataYInt = [int(self.weight)]
+            else:
+                self.data.append((self.measure,self.weight))
+                self.dataXInt.append(int(self.measure))
+                self.dataYInt.append(int(self.weight))
+            self.tableModel = TableModel(self,self.data,self.header)
+            self.tableView.setModel(self.tableModel)
+            if len(self.dataXInt) > 1:
+                self.a, self.b, self.RR = self.linreg(self.dataXInt, self.dataYInt)
+
+    def checkIfFunctionIsNotConstant(self,data):
+        isConstant = [False, False]
+
+        for i in range(0, len(data)):
+            for j in range(0, len(data)):
+                if data[j][0] == data[i][0] and i is not j:
+                    isConstant[0] = True
+                if data[j][1] == data[i][1] and i is not j:
+                    isConstant[1] = True
+
+        for i in range(0, len(data)):
+            for j in range(0, len(data)):
+                if data[j][0] != data[i][0] and i is not j:
+                    isConstant[0] = False
+                if data[j][1] != data[i][1] and i is not j:
+                    isConstant[1] = False
+
+        if isConstant[0] or isConstant[1]:
+            return False
         else:
-            self.data.append((self.measure,self.weight))
-            self.dataXInt.append(int(self.measure))
-            self.dataYInt.append(int(self.weight))
-        self.tableModel = TableModel(self,self.data,self.header)
-        self.tableView.setModel(self.tableModel)
-        if len(self.dataXInt) > 1:
-            self.a, self.b, self.RR = self.linreg(self.dataXInt, self.dataYInt)
+            return True
 
     def calibrateClicked(self):
         self.hide()

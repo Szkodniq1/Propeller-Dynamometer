@@ -110,21 +110,19 @@ def convertFunctionParamToFrame(param):
     number = int(param)
     if number < 0:
         number *= (-1)
-    if number > 16383:
-        lsfPart = number & 0x7F
-        ssfPart = number >> 7
-        ssfPart &= 0x7F
-        msfPart = number >> 7
-        message.append(DATA_FRAME+lsfPart)
-        message.append(DATA_FRAME+ssfPart)
-        message.append(DATA_FRAME+msfPart)
-    elif number > 127:
-        lsfPart = number & 0x7F
-        msfPart = number >> 7
-        message.append(DATA_FRAME+lsfPart)
-        message.append(DATA_FRAME+msfPart)
-    else:
-        message.append(DATA_FRAME+number)
+
+    lsfPart = number & 0x7F
+    ssfPart = number >> 7
+    ssfPart &= 0x7F
+    msfPart = number >> 14
+    msfPart &= 0x7F
+    mmsfPart = number >>21
+    mmsfPart &= 0x7F
+    message.append(DATA_FRAME+lsfPart)
+    message.append(DATA_FRAME+ssfPart)
+    message.append(DATA_FRAME+msfPart)
+    message.append(DATA_FRAME+mmsfPart)
+
     #floating point value
     fract = (param - int(param)) * 1000
     if fract < 0:
@@ -141,19 +139,16 @@ def convertFunctionParamToFrame(param):
     return message
 
 
-def sendTestParameters(serial, poleNumber, poleNumberTwo):
-    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+2, DATA_FRAME+poleNumber, DATA_FRAME+poleNumberTwo,
-               STOP_TRANSMISSION_FRAME]
+def sendTestParameters(serial, poleNumber, poleNumberTwo, safetyTime):
+    message = [START_TRANSMISSION_FRAME, SET_TEST_PARAMS+3, DATA_FRAME+poleNumber, DATA_FRAME+poleNumberTwo,
+               DATA_FRAME+safetyTime, STOP_TRANSMISSION_FRAME]
     serial.write(message)
 
 
 def sendPWMFrame(serial, manual):
-
     message = [START_TRANSMISSION_FRAME, PWM + 2, DATA_FRAME + int(manual[0]), DATA_FRAME + int(manual[1]),
                STOP_TRANSMISSION_FRAME]
     serial.write(message)
-
-
 
 
 def sendStop(serial):

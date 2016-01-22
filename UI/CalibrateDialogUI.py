@@ -40,8 +40,9 @@ class Ui_Dialog(object):
         self.tableView = QtWidgets.QTableView(Dialog)
         self.tableView.setGeometry(QtCore.QRect(10, 80, 580, 270))
         self.tableView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.ContiguousSelection)
         self.tableView.setTextElideMode(QtCore.Qt.ElideRight)
+        self.tableView.setSortingEnabled(False)
         self.tableView.setObjectName("tableView")
         self.tableView.horizontalHeader().setDefaultSectionSize(290)
         self.tableView.horizontalHeader().setMinimumSectionSize(290)
@@ -50,13 +51,12 @@ class Ui_Dialog(object):
         self.measurements.setEnabled(False)
         self.measurements.setGeometry(QtCore.QRect(10, 30, 111, 31))
         self.measurements.setObjectName("measurements")
-
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Kalibracja"))
         self.label_2.setText(_translate("Dialog", "Nominalna wrtość odważnika [g]:"))
         self.calibrate.setText(_translate("Dialog", "Kalibruj"))
         self.label.setText(_translate("Dialog", "Zmierona wartość na przetworniku [reg] :"))

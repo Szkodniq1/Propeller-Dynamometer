@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Kalibracja</string>
   </property>
   <widget class="QLineEdit" name="insertedWeight">
    <property name="geometry">
@@ -119,10 +119,13 @@
     <set>QAbstractItemView::NoEditTriggers</set>
    </property>
    <property name="selectionMode">
-    <enum>QAbstractItemView::NoSelection</enum>
+    <enum>QAbstractItemView::ContiguousSelection</enum>
    </property>
    <property name="textElideMode">
     <enum>Qt::ElideRight</enum>
+   </property>
+   <property name="sortingEnabled">
+    <bool>false</bool>
    </property>
    <attribute name="horizontalHeaderDefaultSectionSize">
     <number>290</number>
